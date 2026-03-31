@@ -1,0 +1,23 @@
+# Metrics and target contract — keep in sync with docs/PROBLEM.md
+# Loaded by churn_ml.metrics (Phase 1+).
+
+target_column: Churn
+positive_class_label: "Yes"
+negative_class_label: "No"
+task: binary_classification
+
+# sklearn / naming convention for reporting
+primary_metrics:
+  - roc_auc
+  - average_precision
+  - f1
+  - recall_churn
+
+error_cost_notes:
+  false_negative: "Missed churner — often higher business cost than false positive."
+  false_positive: "Unnecessary retention spend or outreach on a customer who would have stayed."
+
+threshold_policy:
+  description: "Select threshold on validation after Phase 8; do not tune on test."
+  # Placeholder — update after EDA (Phase 3) and baseline (Phase 6)
+  suggested_minimum_recall_churn: 0.5

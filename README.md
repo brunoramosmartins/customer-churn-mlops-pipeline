@@ -1,27 +1,50 @@
 # Customer churn MLOps pipeline
 
+[![CI](https://github.com/brunoramosmartins/customer-churn-mlops-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/brunoramosmartins/customer-churn-mlops-pipeline/actions/workflows/ci.yml)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 End-to-end machine learning project for **Telco customer churn** (binary classification), structured for a portfolio-ready, production-minded workflow: data validation, feature engineering, training, evaluation, experiment tracking, packaging, API serving, and monitoring.
+
+## Problem statement (Phase 1)
+
+- **Human-readable:** [docs/PROBLEM.md](docs/PROBLEM.md) — business goal, ML task, metrics, cost of errors, threshold policy.
+- **Machine-readable:** [configs/metrics.yaml](configs/metrics.yaml) — same contract for code.
+- **Python API:** `churn_ml.metrics` (`target_column()`, `positive_class_label()`, `primary_metrics()`, …).
 
 ## Roadmap and workflow
 
-The full phased roadmap, GitHub conventions (labels, milestones, tags, releases), ASCII architecture, issue specifications, and automation instructions are in:
+**[docs/ML_PROJECT_ROADMAP.md](docs/ML_PROJECT_ROADMAP.md)** — phases, GitHub conventions, architecture, issues, scripts.
 
-**[docs/ML_PROJECT_ROADMAP.md](docs/ML_PROJECT_ROADMAP.md)**
+## Environment setup
+
+```bash
+python -m venv .venv
+.venv\Scripts\activate          # Windows — on macOS/Linux: source .venv/bin/activate
+pip install -e ".[dev]"
+pytest -q
+```
+
+No dataset is required for Phase 1 or for the current tests.
+
+## Data (manual step — Phase 2+)
+
+The Telco CSV is **not** committed. When you start **Phase 2**, download the dataset (e.g. [Kaggle Telco Customer Churn](https://www.kaggle.com/datasets/blastchar/telco-customer-churn)), place the file under `data/raw/`, and record the source URL + `sha256` in `data/raw/README.md` as the roadmap describes.
 
 ## Repository layout (summary)
 
 | Path | Purpose |
 |------|---------|
-| `configs/` | Hyperparameters, paths, seeds |
-| `data/raw/` | Immutable downloaded data (CSV gitignored; see `data/raw/README.md`) |
+| `configs/` | `metrics.yaml` and future hyperparameters |
+| `data/raw/` | Raw CSV (gitignored; see `data/raw/README.md`) |
 | `data/processed/` | Train / validation / test artifacts |
-| `docs/` | Roadmap and problem docs |
+| `docs/` | Roadmap, **PROBLEM.md** |
 | `models/` | Serialized pipelines (gitignored) |
-| `notebooks/` | EDA and experiments (not production logic) |
-| `reports/` | Figures, drift reports, evaluation summaries |
-| `scripts/` | GitHub CLI automation (`create_labels`, `create_milestones`, `create_issues`) |
-| `src/churn_ml/` | Importable Python package |
-| `tests/` | Unit and integration tests |
+| `notebooks/` | EDA (not production logic) |
+| `reports/` | Figures, drift, evaluation summaries |
+| `scripts/` | GitHub CLI automation |
+| `src/churn_ml/` | Package (`metrics` for Phase 1) |
+| `tests/` | Pytest |
 
 ## GitHub automation (Bash + `gh`)
 
@@ -35,11 +58,13 @@ chmod +x scripts/*.sh
 ./scripts/create_issues.sh
 ```
 
-Run these once per repository (or after deleting labels/milestones/issues you want to recreate). Issues are skipped if a title already exists.
-
 ## Status
 
-Scaffolding and roadmap are in place; training code, API, and CI are implemented phase by phase per the roadmap.
+| Phase | Status |
+|-------|--------|
+| 0 — Bootstrap | `pyproject.toml`, package layout, CI workflow |
+| 1 — Problem & metrics | **Done** — `docs/PROBLEM.md`, `configs/metrics.yaml`, `churn_ml.metrics` |
+| 2+ | Pending (needs raw data download for ingestion) |
 
 ## License
 
