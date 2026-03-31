@@ -10,8 +10,13 @@ readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
 dependencies = [
+    "pandas>=2.0",
+    "pandera>=0.20",
     "pyyaml>=6.0",
 ]
+
+[project.scripts]
+churn-validate = "churn_ml.data.validate:cli"
 
 [project.optional-dependencies]
 dev = [
