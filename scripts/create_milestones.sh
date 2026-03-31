@@ -1,13 +1,9 @@
 #!/usr/bin/env bash
-# create_milestones.sh — Create GitHub milestones aligned with ML lifecycle phases.
+# create_milestones.sh — Milestones aligned with consolidated roadmap (Phases 0–12).
 #
-# Usage (from repository root):
-#   chmod +x scripts/create_milestones.sh
-#   ./scripts/create_milestones.sh
-#
-# Prerequisites: gh auth login; repository context set (clone or gh repo set-default).
-#
-# Idempotency: skips if a milestone with the same title already exists (open or closed).
+# Usage: ./scripts/create_milestones.sh
+# Prerequisites: gh auth login; gh repo set-default if needed.
+# Idempotency: skips if milestone title already exists.
 
 set -euo pipefail
 
@@ -37,48 +33,42 @@ create_milestone() {
 echo "Creating milestones for ${REPO}..."
 
 create_milestone "Phase 0 — Bootstrap" \
-  "Python packaging, .gitignore, test skeleton, reproducible environment. ML lifecycle: platform foundation before data work."
+  "Python packaging, tests, .gitignore, reproducible venv."
 
 create_milestone "Phase 1 — Problem & metrics" \
-  "Problem statement, success metrics, error-cost framing for churn classification."
+  "Problem statement, metrics, FN/FP cost framing."
 
 create_milestone "Phase 2 — Data ingestion & validation" \
-  "Raw Telco data layout, checksums, schema validation, CI-friendly checks."
+  "Raw data, checksums, Pandera schema validation, CI fixture."
 
 create_milestone "Phase 3 — EDA" \
-  "Class imbalance, missingness, distributions, leakage review, EDA artifacts."
+  "Target balance, missingness, leakage notes—lean EDA."
 
 create_milestone "Phase 4 — Data preparation" \
-  "Stratified train/val/test, preprocessing, persisted processed tables."
+  "Stratified train/val/test, persisted processed tables."
 
 create_milestone "Phase 5 — Feature engineering" \
-  "Encoding, scaling, derived features, sklearn Pipeline for train/inference parity."
+  "sklearn Pipeline / ColumnTransformer; MVP + optional extras."
 
-create_milestone "Phase 6 — Baseline modeling" \
-  "Logistic regression baseline, first end-to-end metrics and saved artifact."
+create_milestone "Phase 6 — Baseline & MLflow" \
+  "Logistic regression baseline; MLflow from first model run."
 
-create_milestone "Phase 7 — Advanced modeling" \
-  "Tree ensembles, hyperparameter search, validation leaderboard."
+create_milestone "Phase 7 — LightGBM & tuning" \
+  "Single boosting model, stratified CV, MLflow; no test tuning."
 
 create_milestone "Phase 8 — Evaluation" \
-  "ROC/PR, confusion matrix, threshold optimization, champion selection."
+  "ROC/PR, confusion matrix, threshold, champion selection."
 
-create_milestone "Phase 9 — Experiment tracking" \
-  "MLflow runs: params, metrics, artifacts; documented UI workflow."
+create_milestone "Phase 9 — Packaging" \
+  "Versioned artifact, batch predict CLI, pydantic inputs."
 
-create_milestone "Phase 10 — Packaging" \
-  "Serialized inference pipeline, batch predict CLI, version metadata."
+create_milestone "Phase 10 — Serving & monitoring" \
+  "FastAPI; Docker optional; one drift demo + short concept doc."
 
-create_milestone "Phase 11 — Deployment" \
-  "FastAPI service, optional Docker; synchronous churn scoring API."
+create_milestone "Phase 11 — Documentation & release" \
+  "README, results, CHANGELOG, v1.0.0 portfolio release."
 
-create_milestone "Phase 12 — Monitoring" \
-  "Data drift reports (e.g. Evidently), retraining trigger runbook."
-
-create_milestone "Phase 13 — Documentation" \
-  "Portfolio README, architecture, results, v1.0.0 release readiness."
-
-create_milestone "Phase 14 — Future / backlog" \
-  "Feature store, CI/CD hardening, registry, A/B testing — post v1.0."
+create_milestone "Phase 12 — Future / backlog" \
+  "CI, Feast/registry, registry narrative—post v1.0."
 
 echo "Done. Verify with: gh api repos/${REPO}/milestones --jq '.[].title'"
