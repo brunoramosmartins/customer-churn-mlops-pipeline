@@ -1,14 +1,9 @@
 #!/usr/bin/env bash
-# create_issues.sh — Create roadmap issues with full bodies (Context, Tasks, DoD, References).
+# create_issues.sh — Issues matching docs/ML_PROJECT_ROADMAP.md (Phases 0–12).
 #
-# Usage (from repository root):
-#   ./scripts/create_labels.sh && ./scripts/create_milestones.sh
-#   chmod +x scripts/create_issues.sh
-#   ./scripts/create_issues.sh
-#
-# Prerequisites: gh auth login; labels and milestones must exist (run sibling scripts first).
-#
-# Idempotency: skips if any issue (open or closed) has the same title.
+# Run after: ./scripts/create_labels.sh && ./scripts/create_milestones.sh
+# Idempotency: skips if any issue has the same title (open or closed).
+# Stdin (heredoc) is always read first so skips do not leak stdin to the next call.
 
 set -euo pipefail
 
@@ -21,8 +16,6 @@ create_issue() {
   local title="$1"
   local milestone="$2"
   shift 2
-  # remaining args are label flags: pass as "$@"
-  # Read body from stdin first so heredoc is always consumed (even when skipping).
   local body
   body=$(cat)
 
@@ -39,418 +32,237 @@ create_issue() {
   echo "Created issue: $title"
 }
 
-echo "Creating issues (this may take a minute)..."
+echo "Creating issues..."
 
 create_issue \
   "chore: Phase 0 — Python env, packaging, and test skeleton" \
   "Phase 0 — Bootstrap" \
   --label "type:chore" --label "phase:bootstrap" --label "priority:high" <<'EOF'
-## Context: why this issue exists in the ML lifecycle
+## Context
+Reproducible venv + package layout so later work is not notebook-only.
 
-Without a reproducible environment and importable package layout, later stages (validation, training, serving) become notebook-only and fail CI and collaboration expectations.
+## Tasks
+- [ ] `pyproject.toml` or requirements; `src/churn_ml/`, `tests/test_smoke.py`
+- [ ] `.gitignore`, `.env.example`, README install
 
-## Tasks: specific, actionable checklist
+## Definition of done
+- [ ] `pytest` passes in fresh venv; no secrets committed
 
-- [ ] Add `pyproject.toml` (or requirements files) with pinned core deps.
-- [ ] Create `src/churn_ml/` package and `tests/test_smoke.py`.
-- [ ] Add `.gitignore` and `.env.example`.
-- [ ] Document editable install in README.
-
-## Definition of done: verifiable completion criteria
-
-- [ ] Fresh venv: install works; `pytest` passes at least one test.
-- [ ] No secrets in repo; `.env` gitignored.
-
-## References: relevant links, docs, datasets, or code
-
+## References
 - https://packaging.python.org/en/latest/tutorials/packaging-projects/
-- PEP 621 — `pyproject.toml` metadata
 EOF
 
 create_issue \
   "docs: problem statement, metrics, and error-cost framing" \
   "Phase 1 — Problem & metrics" \
   --label "type:docs" --label "phase:docs" --label "priority:high" <<'EOF'
-## Context: why this issue exists in the ML lifecycle
+## Context
+Align churn metrics and FN/FP costs before modeling.
 
-Churn projects often optimize the wrong metric; anchoring ROC-AUC, recall on churn, and business cost early prevents threshold and model selection drift.
+## Tasks
+- [ ] `docs/PROBLEM.md` (or config); Telco `Churn` semantics
 
-## Tasks: specific, actionable checklist
+## Definition of done
+- [ ] One file explains success criteria
 
-- [ ] Add `docs/PROBLEM.md` with positive class definition and metrics.
-- [ ] Document false negative vs false positive business interpretation.
-- [ ] Link metrics to evaluation code constants.
-
-## Definition of done: verifiable completion criteria
-
-- [ ] Reviewer can read one file and understand success criteria.
-- [ ] PR references Telco target column semantics.
-
-## References: relevant links, docs, datasets, or code
-
-- IBM / Kaggle Telco Customer Churn dataset documentation
-- scikit-learn metrics user guide
+## References
+- Dataset docs; sklearn metrics user guide
 EOF
 
 create_issue \
-  "feat: raw dataset ingestion and checksum manifest" \
+  "feat: raw ingestion, checksum, and Pandera validation" \
   "Phase 2 — Data ingestion & validation" \
   --label "type:feature" --label "phase:data" --label "priority:high" <<'EOF'
-## Context: why this issue exists in the ML lifecycle
+## Context
+Traceable raw data + Pandera as the single validation standard.
 
-Raw data is the system of record; ingestion must be traceable and repeatable for audits and reproducibility.
+## Tasks
+- [ ] Download/docs + `sha256` in `data/raw/README.md`
+- [ ] Pandera schema + CLI exit non-zero on failure; `tests/fixtures/` for CI
 
-## Tasks: specific, actionable checklist
+## Definition of done
+- [ ] Validate fixture offline; raw CSV gitignored
 
-- [ ] Implement download script or documented curl/Kaggle flow.
-- [ ] Write `data/raw/README.md` with source URL and `sha256`.
-- [ ] Ensure large files are gitignored.
-
-## Definition of done: verifiable completion criteria
-
-- [ ] Same script reproduces identical checksum on same file version.
-- [ ] README lists minimum file name and expected rows.
-
-## References: relevant links, docs, datasets, or code
-
-- https://www.kaggle.com/datasets/blastchar/telco-customer-churn (verify current canonical URL)
+## References
+- https://pandera.readthedocs.io/
+- Telco dataset source (e.g. Kaggle)
 EOF
 
 create_issue \
-  "feat: data validation layer for Telco schema" \
-  "Phase 2 — Data ingestion & validation" \
-  --label "type:feature" --label "phase:data" --label "priority:high" <<'EOF'
-## Context: why this issue exists in the ML lifecycle
-
-Validation gates prevent silent schema changes from breaking training and serving and mimic production data contracts.
-
-## Tasks: specific, actionable checklist
-
-- [ ] Define expected columns and dtypes in code.
-- [ ] CLI exits non-zero on validation failure.
-- [ ] Add fixture CSV for CI under `tests/fixtures/`.
-
-## Definition of done: verifiable completion criteria
-
-- [ ] CI runs validation on fixture without network.
-- [ ] Breaking change to schema is caught by tests.
-
-## References: relevant links, docs, datasets, or code
-
-- Pandera / Great Expectations / pydantic documentation
-EOF
-
-create_issue \
-  "feat: EDA notebook or script and profiling export" \
+  "feat: lean EDA — target, missingness, leakage notes" \
   "Phase 3 — EDA" \
   --label "type:feature" --label "phase:data" --label "priority:medium" <<'EOF'
-## Context: why this issue exists in the ML lifecycle
+## Context
+Fast pre-pipeline checks without mandatory auto-profiling tools.
 
-EDA reduces leakage risk and informs encoding, imbalance handling, and feature design before irreversible pipeline choices.
+## Tasks
+- [ ] Target balance; missing values (`TotalCharges`); leakage checklist; stratify note
 
-## Tasks: specific, actionable checklist
+## Definition of done
+- [ ] Written conclusions; optional plots if time
 
-- [ ] Summarize class balance and missing values.
-- [ ] Export HTML or PDF report to `reports/`.
-- [ ] List recommended preprocessing steps.
-
-## Definition of done: verifiable completion criteria
-
-- [ ] Report regenerates from raw data via documented command.
-- [ ] Written conclusions section exists (not only plots).
-
-## References: relevant links, docs, datasets, or code
-
-- ydata-profiling / Sweetviz (optional)
+## References
+- Telco field definitions
 EOF
 
 create_issue \
-  "feat: stratified train/validation/test split pipeline" \
+  "feat: stratified train/validation/test pipeline" \
   "Phase 4 — Data preparation" \
   --label "type:feature" --label "phase:data" --label "priority:high" <<'EOF'
-## Context: why this issue exists in the ML lifecycle
+## Context
+Disjoint splits and stable churn rate across sets.
 
-Proper splitting is the foundation of honest metrics; stratification preserves churn rate across splits.
+## Tasks
+- [ ] Config ratios + seed; parquet under `data/processed/`; test no overlap
 
-## Tasks: specific, actionable checklist
+## Definition of done
+- [ ] Three files + churn rate per split logged
 
-- [ ] Implement ratios via config; fixed `random_state`.
-- [ ] Write parquet outputs to `data/processed/`.
-- [ ] Unit test: no row overlap between splits.
-
-## Definition of done: verifiable completion criteria
-
-- [ ] Three disjoint files with expected row counts logged.
-- [ ] Churn rate printed per split.
-
-## References: relevant links, docs, datasets, or code
-
-- scikit-learn `train_test_split` stratify parameter
+## References
+- sklearn `train_test_split(..., stratify=)`
 EOF
 
 create_issue \
-  "feat: sklearn preprocessing and feature engineering pipeline" \
+  "feat: sklearn feature pipeline (MVP + optional extras)" \
   "Phase 5 — Feature engineering" \
   --label "type:feature" --label "phase:features" --label "priority:high" <<'EOF'
-## Context: why this issue exists in the ML lifecycle
+## Context
+Train/inference parity via one serialized `Pipeline`.
 
-Feature parity between training and inference is mandatory; `sklearn` `Pipeline` is the standard portable abstraction.
+## Tasks
+- [ ] MVP: `ColumnTransformer`, encoding, fit on train only
+- [ ] Optional: tenure bins / ratios if they help validation
 
-## Tasks: specific, actionable checklist
+## Definition of done
+- [ ] `joblib` round-trip; feature count documented
 
-- [ ] `ColumnTransformer` for numeric vs categorical.
-- [ ] Fit on train only; transform val/test in training scripts.
-- [ ] Optional derived features with tests.
-
-## Definition of done: verifiable completion criteria
-
-- [ ] Single pipeline object serializable with `joblib`.
-- [ ] Documented feature count after transform.
-
-## References: relevant links, docs, datasets, or code
-
+## References
 - https://scikit-learn.org/stable/modules/compose.html
 EOF
 
 create_issue \
-  "feat: baseline logistic regression training job" \
-  "Phase 6 — Baseline modeling" \
-  --label "type:feature" --label "phase:modeling" --label "priority:high" <<'EOF'
-## Context: why this issue exists in the ML lifecycle
+  "feat: logistic regression baseline with MLflow logging" \
+  "Phase 6 — Baseline & MLflow" \
+  --label "type:feature" --label "phase:modeling" --label "area:mlflow" --label "priority:high" <<'EOF'
+## Context
+Baseline + experiment tracking from the first real model run.
 
-A baseline quantifies lift from complex models and validates the data pipeline end-to-end.
+## Tasks
+- [ ] Train baseline; MLflow params/metrics/artifact; `models/baseline.joblib`
+- [ ] README: `MLFLOW_TRACKING_URI`, `mlflow ui`
 
-## Tasks: specific, actionable checklist
+## Definition of done
+- [ ] At least one MLflow run; `mlruns/` gitignored
 
-- [ ] Train with `class_weight` if imbalanced.
-- [ ] Save metrics JSON and model artifact.
-- [ ] Log run metadata (git sha, seed).
-
-## Definition of done: verifiable completion criteria
-
-- [ ] One command trains baseline and writes `models/baseline.joblib`.
-- [ ] Metrics include ROC-AUC and F1 on validation.
-
-## References: relevant links, docs, datasets, or code
-
-- scikit-learn `LogisticRegression`
-EOF
-
-create_issue \
-  "feat: Random Forest and boosting with CV tuning" \
-  "Phase 7 — Advanced modeling" \
-  --label "type:feature" --label "phase:modeling" --label "priority:medium" <<'EOF'
-## Context: why this issue exists in the ML lifecycle
-
-Tree ensembles typically improve ranking on tabular churn data; CV tuning estimates generalization without touching the test set.
-
-## Tasks: specific, actionable checklist
-
-- [ ] Implement RF + XGBoost or LightGBM with same evaluation harness.
-- [ ] Stratified K-fold on training portion only.
-- [ ] Persist best hyperparameters to `configs/`.
-
-## Definition of done: verifiable completion criteria
-
-- [ ] Leaderboard compares models on validation.
-- [ ] Test set used once in final evaluation milestone only.
-
-## References: relevant links, docs, datasets, or code
-
-- XGBoost / LightGBM sklearn API docs
-EOF
-
-create_issue \
-  "feat: ROC/PR curves, confusion matrix, threshold search" \
-  "Phase 8 — Evaluation" \
-  --label "type:feature" --label "phase:evaluation" --label "priority:high" <<'EOF'
-## Context: why this issue exists in the ML lifecycle
-
-Classification metrics depend on threshold; business-aligned thresholding is as important as model choice.
-
-## Tasks: specific, actionable checklist
-
-- [ ] Generate plots saved under `reports/figures/`.
-- [ ] Implement threshold grid or F-beta optimization.
-- [ ] Document chosen threshold and rationale.
-
-## Definition of done: verifiable completion criteria
-
-- [ ] All plots reproducible from evaluation script.
-- [ ] Summary file lists val vs test metrics clearly.
-
-## References: relevant links, docs, datasets, or code
-
-- scikit-learn `precision_recall_curve`, `roc_curve`
-EOF
-
-create_issue \
-  "feat: MLflow tracking for training runs" \
-  "Phase 9 — Experiment tracking" \
-  --label "type:feature" --label "area:mlflow" --label "phase:modeling" --label "priority:medium" <<'EOF'
-## Context: why this issue exists in the ML lifecycle
-
-Experiment tracking is the operational memory of modeling work and enables registry and governance later.
-
-## Tasks: specific, actionable checklist
-
-- [ ] Wrap training in MLflow start_run; log params, metrics, artifact.
-- [ ] Standardize experiment name `churn-telco`.
-- [ ] Document local UI usage.
-
-## Definition of done: verifiable completion criteria
-
-- [ ] Multiple runs comparable in MLflow UI.
-- [ ] `mlruns/` gitignored.
-
-## References: relevant links, docs, datasets, or code
-
+## References
 - https://www.mlflow.org/docs/latest/tracking.html
 EOF
 
 create_issue \
-  "feat: packaged inference pipeline and batch predict CLI" \
-  "Phase 10 — Packaging" \
+  "feat: LightGBM with stratified CV and MLflow" \
+  "Phase 7 — LightGBM & tuning" \
+  --label "type:feature" --label "phase:modeling" --label "area:mlflow" --label "priority:medium" <<'EOF'
+## Context
+One gradient-boosted model for portfolio clarity; no test-set tuning.
+
+## Tasks
+- [ ] LightGBM + search; log runs; best params in `configs/`; leaderboard vs baseline on validation
+
+## Definition of done
+- [ ] Validation leaderboard; test reserved for Phase 8
+
+## References
+- LightGBM sklearn API
+EOF
+
+create_issue \
+  "feat: evaluation — ROC/PR, confusion, threshold, champion" \
+  "Phase 8 — Evaluation" \
+  --label "type:feature" --label "phase:evaluation" --label "priority:high" <<'EOF'
+## Context
+Threshold drives business metrics; freeze champion for packaging.
+
+## Tasks
+- [ ] Plots in `reports/figures/`; threshold search; summary with split labels
+- [ ] Calibration not required for MVP
+
+## Definition of done
+- [ ] Reproducible script; champion + threshold documented
+
+## References
+- sklearn `roc_curve`, `precision_recall_curve`
+EOF
+
+create_issue \
+  "feat: package champion and batch predict CLI" \
+  "Phase 9 — Packaging" \
   --label "type:feature" --label "phase:deployment" --label "priority:high" <<'EOF'
-## Context: why this issue exists in the ML lifecycle
+## Context
+Versioned artifact + batch path before HTTP.
 
-Production systems consume a versioned artifact and a narrow API; packaging separates experimentation from deployment.
+## Tasks
+- [ ] Versioned joblib (or MLflow model); metadata JSON; pydantic batch CLI
 
-## Tasks: specific, actionable checklist
+## Definition of done
+- [ ] One command on sample file; README command block
 
-- [ ] Load champion model from disk or MLflow.
-- [ ] Validate input schema with `pydantic`.
-- [ ] Batch inference CLI with CSV/Parquet output.
-
-## Definition of done: verifiable completion criteria
-
-- [ ] CLI runs on sample file and produces predictions + probabilities.
-- [ ] README documents command.
-
-## References: relevant links, docs, datasets, or code
-
-- joblib persistence best practices
+## References
+- joblib persistence
 EOF
 
 create_issue \
-  "feat: FastAPI service for real-time churn scoring" \
-  "Phase 11 — Deployment" \
+  "feat: FastAPI, optional Docker, one drift demo" \
+  "Phase 10 — Serving & monitoring" \
   --label "type:feature" --label "area:api" --label "phase:deployment" --label "priority:high" <<'EOF'
-## Context: why this issue exists in the ML lifecycle
+## Context
+Serving + minimal monitoring story without a full ops stack.
 
-HTTP APIs are the default synchronous serving pattern for many ML products; this demonstrates deployment readiness.
+## Tasks
+- [ ] `/predict`, `/health`, README `curl`
+- [ ] Docker optional—document as add-on, do not block on it
+- [ ] One drift report (e.g. Evidently) + short `docs/` note on drift and retraining
 
-## Tasks: specific, actionable checklist
+## Definition of done
+- [ ] API runs locally; drift script or artifact reproducible
 
-- [ ] Implement `/predict` and `/health`.
-- [ ] Return probabilities (and optional explanations later).
-- [ ] Add example request/response in README.
-
-## Definition of done: verifiable completion criteria
-
-- [ ] `uvicorn` starts without error; `curl` example works locally.
-- [ ] Errors return structured JSON on bad input.
-
-## References: relevant links, docs, datasets, or code
-
+## References
 - https://fastapi.tiangolo.com/
-EOF
-
-create_issue \
-  "feat: Docker image for API (optional compose)" \
-  "Phase 11 — Deployment" \
-  --label "type:feature" --label "area:api" --label "phase:deployment" --label "priority:low" <<'EOF'
-## Context: why this issue exists in the ML lifecycle
-
-Container images encode environment assumptions and simplify handoff to platform teams.
-
-## Tasks: specific, actionable checklist
-
-- [ ] Dockerfile: install deps, copy package, expose port.
-- [ ] Optional `docker-compose.yml` with volume for model.
-- [ ] Document build and run.
-
-## Definition of done: verifiable completion criteria
-
-- [ ] `docker build` succeeds on clean machine.
-- [ ] Container serves `/health` OK.
-
-## References: relevant links, docs, datasets, or code
-
-- https://docs.docker.com/engine/reference/builder/
-EOF
-
-create_issue \
-  "feat: Evidently drift report and monitoring runbook" \
-  "Phase 12 — Monitoring" \
-  --label "type:feature" --label "phase:monitoring" --label "priority:medium" <<'EOF'
-## Context: why this issue exists in the ML lifecycle
-
-Live systems face distribution shift; monitoring is required for safe retraining and risk management.
-
-## Tasks: specific, actionable checklist
-
-- [ ] Build reference vs current comparison for key features.
-- [ ] Save HTML report to `reports/monitoring/`.
-- [ ] Add `docs/MONITORING.md` with retraining triggers.
-
-## Definition of done: verifiable completion criteria
-
-- [ ] Script regenerates report; policy for committing example artifact documented.
-- [ ] Runbook states who acts on alerts in a real org (template).
-
-## References: relevant links, docs, datasets, or code
-
 - https://docs.evidentlyai.com/
 EOF
 
 create_issue \
-  "docs: README architecture, results table, and v1.0 polish" \
-  "Phase 13 — Documentation" \
+  "docs: README, results, CHANGELOG for v1.0.0" \
+  "Phase 11 — Documentation & release" \
   --label "type:docs" --label "phase:docs" --label "priority:high" <<'EOF'
-## Context: why this issue exists in the ML lifecycle
+## Context
+Primary reviewer-facing deliverable.
 
-Documentation is the primary deliverable for portfolio reviewers and future maintainers.
+## Tasks
+- [ ] Train/eval/serve commands; results + limits; diagram (Mermaid or link)
+- [ ] `CHANGELOG.md` for `v1.0.0`
 
-## Tasks: specific, actionable checklist
+## Definition of done
+- [ ] Reader reproduces core path from README (with data access)
 
-- [ ] README: setup, train, evaluate, serve, monitor commands.
-- [ ] Embed architecture (Mermaid) or link to diagram.
-- [ ] Final results summary with caveats.
-
-## Definition of done: verifiable completion criteria
-
-- [ ] Independent reader reproduces core flow in under 30 minutes (given data access).
-- [ ] `CHANGELOG.md` updated for `v1.0.0`.
-
-## References: relevant links, docs, datasets, or code
-
+## References
 - `docs/ML_PROJECT_ROADMAP.md`
 EOF
 
 create_issue \
-  "chore: backlog — CI workflow, Feast spike, model registry" \
-  "Phase 14 — Future / backlog" \
-  --label "type:chore" --label "phase:docs" --label "priority:low" --label "area:ci" <<'EOF'
-## Context: why this issue exists in the ML lifecycle
+  "chore: backlog — CI, Feast/registry, post-v1" \
+  "Phase 12 — Future / backlog" \
+  --label "type:chore" --label "area:ci" --label "priority:low" <<'EOF'
+## Context
+Post-MVP hardening; does not block v1.0.0.
 
-Post-v1 improvements harden the system toward real MLOps: automation, feature store, and governed promotion — without blocking the portfolio MVP.
+## Tasks
+- [ ] GitHub Actions; Feast/registry spike; MLflow registry narrative (as follow-ups)
 
-## Tasks: specific, actionable checklist
+## Definition of done
+- [ ] Issues filed or explicit deferral
 
-- [ ] GitHub Actions: lint + pytest on push.
-- [ ] Optional Feast or feature registry spike issue breakdown.
-- [ ] MLflow Model Registry promotion narrative (even if simulated).
-
-## Definition of done: verifiable completion criteria
-
-- [ ] At least one CI workflow is green on `main`.
-- [ ] Child issues created per initiative OR documented deferral.
-
-## References: relevant links, docs, datasets, or code
-
-- https://docs.github.com/en/actions
-- Feast / MLflow Model Registry documentation
+## References
+- GitHub Actions; Feast; MLflow registry docs
 EOF
 
 echo "Done. List issues: gh issue list"

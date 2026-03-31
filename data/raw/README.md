@@ -9,4 +9,4 @@ Document in your ingestion issue:
 - `sha256` checksum
 - Approximate row count
 
-See `docs/ML_PROJECT_ROADMAP.md` Phase 2.
+Validation in this project uses **Pandera** (see `docs/ML_PROJECT_ROADMAP.md`, Phase 2).
