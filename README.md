@@ -25,11 +25,17 @@ pip install -e ".[dev]"
 pytest -q
 ```
 
-No dataset is required for Phase 1 or for the current tests.
+CI uses **`tests/fixtures/telco_sample.csv`** — no full dataset needed for `pytest`.
 
-## Data (manual step — Phase 2+)
+## Data — full Telco file (manual)
 
-The Telco CSV is **not** committed. When you start **Phase 2**, download the dataset (e.g. [Kaggle Telco Customer Churn](https://www.kaggle.com/datasets/blastchar/telco-customer-churn)), place the file under `data/raw/`, and record the source URL + `sha256` in `data/raw/README.md` as the roadmap describes.
+The production-sized CSV is **gitignored**. After you download it (e.g. [Kaggle Telco Customer Churn](https://www.kaggle.com/datasets/blastchar/telco-customer-churn)), save it as `data/raw/WA_Fn-UseC_-Telco-Customer-Churn.csv`, fill in **source URL + `sha256` + row count** in [`data/raw/README.md`](data/raw/README.md), then validate:
+
+```bash
+pip install -e .
+python -m churn_ml.data.validate
+# or: churn-validate
+```
 
 ## Repository layout (summary)
 
@@ -43,8 +49,8 @@ The Telco CSV is **not** committed. When you start **Phase 2**, download the dat
 | `notebooks/` | EDA (not production logic) |
 | `reports/` | Figures, drift, evaluation summaries |
 | `scripts/` | GitHub CLI automation |
-| `src/churn_ml/` | Package (`metrics` for Phase 1) |
-| `tests/` | Pytest |
+| `src/churn_ml/` | Package (`metrics`, `data` validation) |
+| `tests/` | Pytest + `fixtures/telco_sample.csv` for CI |
 
 ## GitHub automation (Bash + `gh`)
 
@@ -64,7 +70,8 @@ chmod +x scripts/*.sh
 |-------|--------|
 | 0 — Bootstrap | `pyproject.toml`, package layout, CI workflow |
 | 1 — Problem & metrics | **Done** — `docs/PROBLEM.md`, `configs/metrics.yaml`, `churn_ml.metrics` |
-| 2+ | Pending (needs raw data download for ingestion) |
+| 2 — Ingestion & validation | **Done** in code — Pandera schema, CLI, fixture; **you** still download full CSV + fill `sha256` in `data/raw/README.md` |
+| 3+ | Pending |
 
 ## License
 
