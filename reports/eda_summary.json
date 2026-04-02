@@ -1,0 +1,65 @@
+{
+  "n_rows": 7043,
+  "n_columns": 21,
+  "target_column": "Churn",
+  "churn_rate_pct_positive": 26.537,
+  "churn_value_counts": {
+    "No": 5174,
+    "Yes": 1869
+  },
+  "missing_by_column": {
+    "missing_count": {
+      "TotalCharges": 11
+    },
+    "missing_pct": {
+      "TotalCharges": 0.16
+    }
+  },
+  "categorical_cardinality": {
+    "customerID": 7043,
+    "gender": 2,
+    "Partner": 2,
+    "Dependents": 2,
+    "PhoneService": 2,
+    "MultipleLines": 3,
+    "InternetService": 3,
+    "OnlineSecurity": 3,
+    "OnlineBackup": 3,
+    "DeviceProtection": 3,
+    "TechSupport": 3,
+    "StreamingTV": 3,
+    "StreamingMovies": 3,
+    "Contract": 3,
+    "PaperlessBilling": 2,
+    "PaymentMethod": 4
+  },
+  "numeric_correlation_with_churn_top": {
+    "tenure": -0.3522286701130777,
+    "TotalCharges": -0.1994840835675645,
+    "MonthlyCharges": 0.19335642223784694,
+    "SeniorCitizen": 0.15088932817647324
+  },
+  "columns_list": [
+    "customerID",
+    "gender",
+    "SeniorCitizen",
+    "Partner",
+    "Dependents",
+    "tenure",
+    "PhoneService",
+    "MultipleLines",
+    "InternetService",
+    "OnlineSecurity",
+    "OnlineBackup",
+    "DeviceProtection",
+    "TechSupport",
+    "StreamingTV",
+    "StreamingMovies",
+    "Contract",
+    "PaperlessBilling",
+    "PaymentMethod",
+    "MonthlyCharges",
+    "TotalCharges",
+    "Churn"
+  ]
+}

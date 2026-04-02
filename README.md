@@ -37,6 +37,23 @@ python -m churn_ml.data.validate
 # or: churn-validate
 ```
 
+## EDA (Phase 3)
+
+Lean, reproducible summaries (no auto-profiling stack): class balance, missing values, categorical cardinality, numeric correlations with churn, figures, and modeling notes. **Stratify on `Churn` in Phase 4** is stated in the generated Markdown.
+
+- **Leakage checklist:** [docs/EDA_LEAKAGE_CHECKLIST.md](docs/EDA_LEAKAGE_CHECKLIST.md)
+- **CLI** (default input = `data/raw/WA_Fn-UseC_-Telco-Customer-Churn.csv` if present):
+
+```bash
+python -m churn_ml.eda.run -i tests/fixtures/telco_sample.csv -o reports
+python -m churn_ml.eda.run
+# or: churn-eda …
+```
+
+Outputs: `reports/eda_summary.md`, `reports/eda_summary.json`, `reports/figures/`.
+
+- **Notebook:** [notebooks/01_eda.ipynb](notebooks/01_eda.ipynb) · [notebooks/README.md](notebooks/README.md)
+
 ## Repository layout (summary)
 
 | Path | Purpose |
@@ -44,12 +61,12 @@ python -m churn_ml.data.validate
 | `configs/` | `metrics.yaml` and future hyperparameters |
 | `data/raw/` | Raw CSV (gitignored; see `data/raw/README.md`) |
 | `data/processed/` | Train / validation / test artifacts |
-| `docs/` | Roadmap, **PROBLEM.md** |
+| `docs/` | Roadmap, **PROBLEM.md**, **EDA_LEAKAGE_CHECKLIST.md** |
 | `models/` | Serialized pipelines (gitignored) |
 | `notebooks/` | EDA (not production logic) |
 | `reports/` | Figures, drift, evaluation summaries |
 | `scripts/` | GitHub CLI automation |
-| `src/churn_ml/` | Package (`metrics`, `data` validation) |
+| `src/churn_ml/` | `metrics`, `data` (validation), `eda` (reports) |
 | `tests/` | Pytest + `fixtures/telco_sample.csv` for CI |
 
 ## GitHub automation (Bash + `gh`)
@@ -71,7 +88,8 @@ chmod +x scripts/*.sh
 | 0 — Bootstrap | `pyproject.toml`, package layout, CI workflow |
 | 1 — Problem & metrics | **Done** — `docs/PROBLEM.md`, `configs/metrics.yaml`, `churn_ml.metrics` |
 | 2 — Ingestion & validation | **Done** in code — Pandera schema, CLI, fixture; **you** still download full CSV + fill `sha256` in `data/raw/README.md` |
-| 3+ | Pending |
+| 3 — EDA | **Done** — `churn_ml.eda`, `churn-eda` / `python -m churn_ml.eda.run`, `docs/EDA_LEAKAGE_CHECKLIST.md`, `notebooks/01_eda.ipynb` |
+| 4+ | Pending |
 
 ## License
 

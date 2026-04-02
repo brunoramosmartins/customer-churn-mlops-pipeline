@@ -49,3 +49,4 @@ Optional secondary metrics: precision at churn, specificity, confusion matrix co
 - IBM / Kaggle **Telco Customer Churn** dataset (column names and semantics follow the published CSV).
 - Project metrics contract (machine-readable): [`configs/metrics.yaml`](../configs/metrics.yaml).
 - Code entrypoint for the same contract: `churn_ml.metrics` in `src/churn_ml/metrics.py`.
+- After EDA, review **[EDA_LEAKAGE_CHECKLIST.md](EDA_LEAKAGE_CHECKLIST.md)** before modeling.
