@@ -191,14 +191,14 @@ Phases **0–12** (was 0–14): MLflow starts with the **first** training run; *
 
 **Tasks — MVP (must ship)**
 
-- [ ] Numeric vs categorical handling; one-hot (or justified alternative) with cardinality note.
-- [ ] Fit on train only; serialize pipeline.
+- [x] Numeric vs categorical handling; one-hot (or justified alternative) with cardinality note.
+- [x] Fit on train only; serialize pipeline.
 
 **Tasks — Advanced (optional)**
 
 - [ ] Binned `tenure`, simple ratios (e.g. charges per tenure), interactions—only if they help validation metrics.
 
-**Deliverables:** Serializable pipeline; feature count documented.
+**Deliverables:** Serializable pipeline; feature count documented (`churn_ml.features`, `models/feature_pipeline.joblib`, `feature_manifest.json`).
 
 **GitHub:** `feat/phase-5-feature-engineering` · Milestone **Phase 5 — Feature engineering** · Tag `v0.5-features` · Release **No**
 

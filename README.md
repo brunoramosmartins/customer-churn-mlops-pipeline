@@ -68,11 +68,27 @@ python -m churn_ml.data.split -i path/to/raw.csv -o data/processed
 
 Omit `--skip-validation` when using real raw data (Pandera check). The tiny CI fixture has only four rows and is **not** enough for stratified 70/15/15; use the full Kaggle CSV (or any sample with enough rows per class in each split).
 
+## Feature engineering (Phase 5)
+
+Single sklearn **`Pipeline`** with a **`ColumnTransformer`**: numeric columns → median imputation + `StandardScaler`; categoricals → most-frequent imputation + **one-hot** (`handle_unknown='ignore'` for val/test). **Fit on `train.parquet` only**; artifacts are written under **`models/`** (gitignored).
+
+- **Config:** [`configs/features.yaml`](configs/features.yaml) — ID column, numeric vs categorical lists, encoding note.
+- **Outputs:** `models/feature_pipeline.joblib`, `models/feature_manifest.json` (`n_features_out`, feature names, per-column train cardinalities).
+
+```bash
+# Requires data/processed/train.parquet (Phase 4)
+python -m churn_ml.features.run
+python -m churn_ml.features.run -t data/processed/train.parquet -o models -c configs/features.yaml
+# or: churn-features …
+```
+
+Phase 6 can append a classifier step to the same `Pipeline` or load `feature_pipeline.joblib` and chain a model.
+
 ## Repository layout (summary)
 
 | Path | Purpose |
 |------|---------|
-| `configs/` | `metrics.yaml`, `split.yaml`, future hyperparameters |
+| `configs/` | `metrics.yaml`, `split.yaml`, `features.yaml`, future hyperparameters |
 | `data/raw/` | Raw CSV (gitignored; see `data/raw/README.md`) |
 | `data/processed/` | Train / validation / test artifacts |
 | `docs/` | Roadmap, **PROBLEM.md**, **EDA_LEAKAGE_CHECKLIST.md** |
@@ -80,7 +96,7 @@ Omit `--skip-validation` when using real raw data (Pandera check). The tiny CI f
 | `notebooks/` | EDA (not production logic) |
 | `reports/` | Figures, drift, evaluation summaries |
 | `scripts/` | GitHub CLI automation |
-| `src/churn_ml/` | `metrics`, `data` (validation), `eda` (reports) |
+| `src/churn_ml/` | `metrics`, `data`, `eda`, `features` (preprocessing) |
 | `tests/` | Pytest + `fixtures/telco_sample.csv` for CI |
 
 ## GitHub automation (Bash + `gh`)
@@ -104,7 +120,8 @@ chmod +x scripts/*.sh
 | 2 — Ingestion & validation | **Done** in code — Pandera schema, CLI, fixture; **you** still download full CSV + fill `sha256` in `data/raw/README.md` |
 | 3 — EDA | **Done** — `churn_ml.eda`, `churn-eda` / `python -m churn_ml.eda.run`, `docs/EDA_LEAKAGE_CHECKLIST.md`, `notebooks/01_eda.ipynb` |
 | 4 — Split | **Done** — `churn_ml.data.split`, `churn-split` / `python -m churn_ml.data.split`, `configs/split.yaml`, Parquet + manifest under `data/processed/` |
-| 5+ | Pending |
+| 5 — Features | **Done** — `churn_ml.features`, `churn-features` / `python -m churn_ml.features.run`, `configs/features.yaml`, `feature_pipeline.joblib` + manifest under `models/` |
+| 6+ | Pending |
 
 ## License
 
