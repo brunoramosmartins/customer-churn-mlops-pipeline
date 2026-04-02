@@ -1,0 +1,33 @@
+# Feature groups for Telco churn — keep aligned with raw schema (Phase 5).
+# Target and ID are never passed to the transformer (see churn_ml.features).
+
+id_column: customerID
+
+numeric_features:
+  - SeniorCitizen
+  - tenure
+  - MonthlyCharges
+  - TotalCharges
+
+categorical_features:
+  - gender
+  - Partner
+  - Dependents
+  - PhoneService
+  - MultipleLines
+  - InternetService
+  - OnlineSecurity
+  - OnlineBackup
+  - DeviceProtection
+  - TechSupport
+  - StreamingTV
+  - StreamingMovies
+  - Contract
+  - PaperlessBilling
+  - PaymentMethod
+
+# Categorical encoding: one-hot with unknown levels ignored at inference (validation/test).
+encoding: one_hot
+
+# Cardinality (Kaggle Telco): all categoricals are low-cardinality; largest raw
+# cardinality on typical train splits is a handful of levels (e.g. PaymentMethod: 4).

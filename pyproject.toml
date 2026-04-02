@@ -22,6 +22,7 @@ dependencies = [
 churn-validate = "churn_ml.data.validate:cli"
 churn-eda = "churn_ml.eda.run:cli"
 churn-split = "churn_ml.data.split:cli"
+churn-features = "churn_ml.features.run:cli"
 
 [project.optional-dependencies]
 dev = [
