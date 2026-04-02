@@ -13,12 +13,15 @@ dependencies = [
     "matplotlib>=3.7",
     "pandas>=2.0",
     "pandera>=0.20",
+    "pyarrow>=14.0",
     "pyyaml>=6.0",
+    "scikit-learn>=1.3",
 ]
 
 [project.scripts]
 churn-validate = "churn_ml.data.validate:cli"
 churn-eda = "churn_ml.eda.run:cli"
+churn-split = "churn_ml.data.split:cli"
 
 [project.optional-dependencies]
 dev = [

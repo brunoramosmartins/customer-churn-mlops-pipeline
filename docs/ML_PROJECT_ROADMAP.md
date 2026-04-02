@@ -177,9 +177,9 @@ Phases **0–12** (was 0–14): MLflow starts with the **first** training run; *
 
 **Tasks**
 
-- [ ] Ratios in config (e.g. 70/15/15); handle `TotalCharges` / dtypes; tests for no overlap.
+- [x] Ratios in config (e.g. 70/15/15); handle `TotalCharges` / dtypes; tests for no overlap.
 
-**Deliverables:** Three disjoint files; churn rate per split logged.
+**Deliverables:** Three disjoint Parquet files + `split_manifest.json`; churn rate per split in manifest (implemented in `churn_ml.data.split`, `configs/split.yaml`).
 
 **GitHub:** `feat/phase-4-preprocess-split` · Milestone **Phase 4 — Data preparation** · Tag `v0.4-data-prep` · Release **No**
 

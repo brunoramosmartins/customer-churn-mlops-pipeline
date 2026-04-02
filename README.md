@@ -54,11 +54,25 @@ Outputs: `reports/eda_summary.md`, `reports/eda_summary.json`, `reports/figures/
 
 - **Notebook:** [notebooks/01_eda.ipynb](notebooks/01_eda.ipynb) · [notebooks/README.md](notebooks/README.md)
 
+## Train / val / test split (Phase 4)
+
+Stratified split on the churn column (`configs/metrics.yaml`), fixed seed, ratios in **`configs/split.yaml`**. Writes **`train.parquet`**, **`validation.parquet`**, **`test.parquet`**, and **`split_manifest.json`** under `data/processed/` (or `-o`). `TotalCharges` and `SeniorCitizen` are normalized before split.
+
+```bash
+# Default: reads data/raw/WA_Fn-UseC_-Telco-Customer-Churn.csv, writes data/processed/
+python -m churn_ml.data.split
+# Explicit paths:
+python -m churn_ml.data.split -i path/to/raw.csv -o data/processed
+# or: churn-split …
+```
+
+Omit `--skip-validation` when using real raw data (Pandera check). The tiny CI fixture has only four rows and is **not** enough for stratified 70/15/15; use the full Kaggle CSV (or any sample with enough rows per class in each split).
+
 ## Repository layout (summary)
 
 | Path | Purpose |
 |------|---------|
-| `configs/` | `metrics.yaml` and future hyperparameters |
+| `configs/` | `metrics.yaml`, `split.yaml`, future hyperparameters |
 | `data/raw/` | Raw CSV (gitignored; see `data/raw/README.md`) |
 | `data/processed/` | Train / validation / test artifacts |
 | `docs/` | Roadmap, **PROBLEM.md**, **EDA_LEAKAGE_CHECKLIST.md** |
@@ -89,7 +103,8 @@ chmod +x scripts/*.sh
 | 1 — Problem & metrics | **Done** — `docs/PROBLEM.md`, `configs/metrics.yaml`, `churn_ml.metrics` |
 | 2 — Ingestion & validation | **Done** in code — Pandera schema, CLI, fixture; **you** still download full CSV + fill `sha256` in `data/raw/README.md` |
 | 3 — EDA | **Done** — `churn_ml.eda`, `churn-eda` / `python -m churn_ml.eda.run`, `docs/EDA_LEAKAGE_CHECKLIST.md`, `notebooks/01_eda.ipynb` |
-| 4+ | Pending |
+| 4 — Split | **Done** — `churn_ml.data.split`, `churn-split` / `python -m churn_ml.data.split`, `configs/split.yaml`, Parquet + manifest under `data/processed/` |
+| 5+ | Pending |
 
 ## License
 
