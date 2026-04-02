@@ -1,0 +1,5 @@
+# Train / validation / test split (Phase 4). Ratios must sum to 1.0.
+random_state: 42
+train_ratio: 0.70
+val_ratio: 0.15
+test_ratio: 0.15
