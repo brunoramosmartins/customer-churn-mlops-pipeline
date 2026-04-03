@@ -38,3 +38,9 @@ def negative_class_label() -> str:
 def primary_metrics() -> tuple[str, ...]:
     raw = load_metrics_contract()["primary_metrics"]
     return tuple(str(m) for m in raw)
+
+
+def suggested_minimum_recall_churn() -> float:
+    """Minimum recall on churn (positive class) used as a floor when scanning thresholds (Phase 8)."""
+    pol = load_metrics_contract().get("threshold_policy") or {}
+    return float(pol.get("suggested_minimum_recall_churn", 0.5))

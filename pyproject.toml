@@ -27,6 +27,7 @@ churn-split = "churn_ml.data.split:cli"
 churn-features = "churn_ml.features.run:cli"
 churn-train-baseline = "churn_ml.models.run_baseline:cli"
 churn-train-lightgbm = "churn_ml.models.run_lightgbm:cli"
+churn-evaluate = "churn_ml.evaluation.run:cli"
 
 [project.optional-dependencies]
 dev = [

@@ -119,19 +119,33 @@ python -m churn_ml.models.run_lightgbm --tune-config configs/tune_lightgbm.yaml 
 # or: churn-train-lightgbm …
 ```
 
+## Evaluation and threshold (Phase 8)
+
+**Threshold is chosen on validation only** (grid over predicted churn probability): enforce minimum **recall on churn** from `configs/metrics.yaml` (`suggested_minimum_recall_churn`) unless overridden in [`configs/eval.yaml`](configs/eval.yaml), then **maximize F-beta** (values of beta above 1 weight recall more) among feasible thresholds. **Test** is scored **once**: ranking metrics (ROC-AUC, average precision) and confusion-based metrics at the **frozen** validation threshold — no threshold tuning on test.
+
+- **Champion model:** defaults to `models/lightgbm_tuned.joblib`, falls back to `models/baseline.joblib` if missing.
+- **Outputs:** figures under `reports/figures/` (`phase8_*`), [`reports/evaluation_summary.json`](reports/evaluation_summary.json), [`reports/evaluation_summary.md`](reports/evaluation_summary.md), frozen [`configs/champion.yaml`](configs/champion.yaml) for Phase 9+.
+- **Calibration plots** are intentionally out of scope for portfolio v1 (roadmap).
+
+```bash
+python -m churn_ml.evaluation.run
+# or: churn-evaluate
+# Optional: --champion path/to/model.joblib  ·  --root .  (for resolving relative paths in eval.yaml)
+```
+
 ## Repository layout (summary)
 
 | Path | Purpose |
 |------|---------|
-| `configs/` | `metrics.yaml`, `split.yaml`, `features.yaml`, `train_baseline.yaml`, `tune_lightgbm.yaml`, `lightgbm_best.yaml` (generated), … |
+| `configs/` | `metrics.yaml`, `eval.yaml`, `champion.yaml` (Phase 8), `split.yaml`, `features.yaml`, training YAMLs, … |
 | `data/raw/` | Raw CSV (gitignored; see `data/raw/README.md`) |
 | `data/processed/` | Train / validation / test artifacts |
 | `docs/` | Roadmap, **PROBLEM.md**, **EDA_LEAKAGE_CHECKLIST.md** |
 | `models/` | Serialized pipelines (gitignored) |
 | `notebooks/` | EDA + end-to-end walkthrough (`_walkthrough_outputs/` gitignored) |
-| `reports/` | Figures, drift, evaluation summaries |
+| `reports/` | Figures (`phase8_*`, EDA), `evaluation_summary.*` |
 | `scripts/` | GitHub CLI automation |
-| `src/churn_ml/` | `metrics`, `data`, `eda`, `features`, `models` (training) |
+| `src/churn_ml/` | `metrics`, `data`, `eda`, `features`, `models`, `evaluation` |
 | `tests/` | Pytest + `fixtures/telco_sample.csv` for CI |
 
 ## GitHub automation (Bash + `gh`)
@@ -158,7 +172,8 @@ chmod +x scripts/*.sh
 | 5 — Features | **Done** — `churn_ml.features`, `churn-features` / `python -m churn_ml.features.run`, `configs/features.yaml`, `feature_pipeline.joblib` + manifest under `models/` |
 | 6 — Baseline + MLflow | **Done** — `churn_ml.models`, `churn-train-baseline` / `python -m churn_ml.models.run_baseline`, `configs/train_baseline.yaml`, `models/baseline.joblib`, `mlruns/` (local or remote via `MLFLOW_TRACKING_URI`) |
 | 7 — LightGBM | **Done** — `churn-train-lightgbm` / `python -m churn_ml.models.run_lightgbm`, `configs/tune_lightgbm.yaml`, `configs/lightgbm_best.yaml`, `models/lightgbm_tuned.joblib`, MLflow nested trials |
-| 8+ | Pending |
+| 8 — Evaluation | **Done** — `churn-evaluate` / `python -m churn_ml.evaluation.run`, `configs/eval.yaml`, threshold on val, test one-shot, `reports/evaluation_summary.*`, `configs/champion.yaml` |
+| 9+ | Pending |
 
 ## License
 

@@ -240,10 +240,10 @@ Phases **0–12** (was 0–14): MLflow starts with the **first** training run; *
 
 **Tasks**
 
-- [ ] Plots under `reports/figures/`; summary JSON/MD with **which split** each metric uses.
-- [ ] No calibration plots required for v1 portfolio path (add later if needed).
+- [x] Plots under `reports/figures/`; summary JSON/MD with **which split** each metric uses.
+- [x] No calibration plots required for v1 portfolio path (add later if needed).
 
-**Deliverables:** Champion + threshold documented.
+**Deliverables:** Champion + threshold documented (`churn_ml.evaluation.run`, `configs/champion.yaml`, `reports/evaluation_summary.{json,md}`, `phase8_*` figures).
 
 **GitHub:** `feat/phase-8-evaluation` · Milestone **Phase 8 — Evaluation** · Tag `v0.8-evaluation` · Release **Optional**
 

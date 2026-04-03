@@ -1,0 +1,55 @@
+{
+  "phase": 8,
+  "champion": {
+    "model_path_resolved": "C:\\Users\\bruno\\Desktop\\Projetos\\customer-churn-mlops-pipeline\\models\\lightgbm_tuned.joblib",
+    "model_path_source": "champion_model_path",
+    "threshold": 0.47000000000000003,
+    "threshold_selected_on": "validation",
+    "threshold_search": {
+      "min_recall_churn_floor": 0.5,
+      "fbeta_beta": 1.25,
+      "n_feasible_thresholds": 72,
+      "constraint_satisfied": true
+    }
+  },
+  "metrics_by_split": {
+    "validation": {
+      "description": "Ranking curves and threshold sweep; operating metrics at chosen threshold.",
+      "ranking_threshold_free": {
+        "roc_auc": 0.8332102762593095,
+        "average_precision": 0.6374066922864318
+      },
+      "at_chosen_threshold": {
+        "recall_churn": 0.8042704626334519,
+        "precision_churn": 0.5067264573991032,
+        "f1": 0.6217331499312242,
+        "fbeta": 0.6543323211637596
+      }
+    },
+    "test": {
+      "description": "One-shot holdout. Ranking metrics (ROC-AUC, AP) need no threshold. Confusion-based metrics use the threshold frozen from validation only.",
+      "ranking_threshold_free": {
+        "roc_auc": 0.8508871116013974,
+        "average_precision": 0.6581214010192473
+      },
+      "at_frozen_threshold_from_validation": {
+        "recall_churn": 0.8428571428571429,
+        "precision_churn": 0.5186813186813187,
+        "f1": 0.6421768707482993,
+        "fbeta": 0.6775910364145659
+      }
+    }
+  },
+  "figures": {
+    "roc_validation": "C:\\Users\\bruno\\Desktop\\Projetos\\customer-churn-mlops-pipeline\\reports\\figures\\phase8_roc_validation.png",
+    "pr_validation": "C:\\Users\\bruno\\Desktop\\Projetos\\customer-churn-mlops-pipeline\\reports\\figures\\phase8_pr_validation.png",
+    "roc_test": "C:\\Users\\bruno\\Desktop\\Projetos\\customer-churn-mlops-pipeline\\reports\\figures\\phase8_roc_test.png",
+    "pr_test": "C:\\Users\\bruno\\Desktop\\Projetos\\customer-churn-mlops-pipeline\\reports\\figures\\phase8_pr_test.png",
+    "threshold_sweep_validation": "C:\\Users\\bruno\\Desktop\\Projetos\\customer-churn-mlops-pipeline\\reports\\figures\\phase8_threshold_sweep_validation.png",
+    "confusion_matrix_test": "C:\\Users\\bruno\\Desktop\\Projetos\\customer-churn-mlops-pipeline\\reports\\figures\\phase8_confusion_matrix_test.png"
+  },
+  "notes": [
+    "Calibration plots are out of scope for portfolio v1 (roadmap).",
+    "Do not re-tune threshold on test; Phase 9+ should load configs/champion.yaml."
+  ]
+}
