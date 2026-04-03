@@ -1,0 +1,10 @@
+# Phase 9 — batch inference defaults (paths relative to repo root unless absolute).
+
+champion_manifest: configs/champion.yaml
+features_config: configs/features.yaml
+
+# Logical version string written to batch metadata (does not move files by itself).
+artifact_version: v1
+
+default_output: predictions/batch_predictions.parquet
+metadata_output: reports/batch_predict_metadata.json

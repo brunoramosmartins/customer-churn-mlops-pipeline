@@ -255,10 +255,10 @@ Phases **0–12** (was 0–14): MLflow starts with the **first** training run; *
 
 **Tasks**
 
-- [ ] Versioned artifact path; metadata JSON (git sha, data hash optional).
-- [ ] CLI: load champion, read CSV/Parquet, write predictions (module path e.g. `churn_ml.batch_predict`—add folder when you implement).
+- [x] Versioned artifact path; metadata JSON (git sha, data hash optional).
+- [x] CLI: load champion, read CSV/Parquet, write predictions (module path e.g. `churn_ml.batch_predict`—add folder when you implement).
 
-**Deliverables:** One command runs batch predict on a sample file.
+**Deliverables:** One command runs batch predict on a sample file (`churn_ml.batch_predict.run`, `churn-batch-predict`, `configs/batch_predict.yaml`).
 
 **GitHub:** `feat/phase-9-packaging` · Milestone **Phase 9 — Packaging** · Tag `v0.9-packaging` · Release **Yes (optional)** — `v0.9.0-rc1` if batch-only demo matters
 
