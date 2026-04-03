@@ -3,8 +3,101 @@
 [![CI](https://github.com/brunoramosmartins/customer-churn-mlops-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/brunoramosmartins/customer-churn-mlops-pipeline/actions/workflows/ci.yml)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Changelog](https://img.shields.io/badge/changelog-v1.0.1-blue)](CHANGELOG.md)
 
 End-to-end machine learning project for **Telco customer churn** (binary classification), structured for a portfolio-ready, production-minded workflow: data validation, feature engineering, training, evaluation, experiment tracking, packaging, API serving, and monitoring.
+
+**Portfolio release `v1.0.1`** — [CHANGELOG.md](CHANGELOG.md) · `pyproject.toml` version **1.0.1** · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md).
+
+## Contents
+
+- [Quick start](#quick-start-reproduce-the-core-flow)
+- [Results](#results-holdout-champion-model)
+- [Primary metrics](#primary-metrics)
+- [Architecture](#architecture)
+- [Dataset citation](#dataset-citation)
+- [Limitations](#limitations)
+- [Problem statement](#problem-statement-phase-1) (Phase 1) and [phase-by-phase commands](#environment-setup) below
+
+## Quick start: reproduce the core flow
+
+You need the **full Telco CSV** (not committed) under `data/raw/` — see [Dataset citation](#dataset-citation). From the repository root:
+
+```bash
+python -m venv .venv
+# Windows: .venv\Scripts\activate  —  macOS/Linux: source .venv/bin/activate
+pip install -e ".[dev,portfolio]"
+pytest -q
+
+churn-validate
+churn-split
+churn-features
+churn-train-baseline
+churn-train-lightgbm
+churn-evaluate
+```
+
+Optional next steps: **batch** `churn-batch-predict -i data/raw/WA_Fn-UseC_-Telco-Customer-Churn.csv` · **API** `churn-serve` (then `/health`, `/predict`) · **drift** `churn-drift --config configs/drift_report.yaml` (needs `data/processed/` splits).
+
+CI does **not** need the full CSV: it runs `pytest` against `tests/fixtures/telco_sample.csv`.
+
+## Results (holdout, champion model)
+
+The champion is the **LightGBM** pipeline selected after Phase 7; the **classification threshold is chosen on validation only** (recall floor + F-beta), then applied once on **test**. Numbers below match the **committed** snapshot in [`reports/evaluation_summary.json`](reports/evaluation_summary.json) and [`reports/evaluation_summary.md`](reports/evaluation_summary.md); they will change if you retrain or resplit.
+
+| | Validation | Test (one-shot) |
+|--|--:|--:|
+| **ROC-AUC** | 0.833 | 0.851 |
+| **Average precision** | 0.637 | 0.658 |
+| **Recall (churn)** at operating threshold | 0.804 | 0.843 |
+| **Precision (churn)** at operating threshold | 0.507 | 0.519 |
+| **F1** at operating threshold | 0.622 | 0.642 |
+
+**Frozen threshold** (from validation): **0.47** — see [`configs/champion.yaml`](configs/champion.yaml). Figures: `reports/figures/phase8_*.png`.
+
+## Primary metrics
+
+Contract in [`configs/metrics.yaml`](configs/metrics.yaml) and narrative in [`docs/PROBLEM.md`](docs/PROBLEM.md): binary **Churn** (`Yes` / `No`), focus on **ROC-AUC**, **average precision**, **F1**, **recall on churn** (missing churners are treated as costly in the problem framing). Phase 8 applies a **minimum recall on churn** on validation when scanning thresholds.
+
+## Architecture
+
+Training and inference share one **sklearn `Pipeline`** (preprocess + classifier) serialized with **joblib**. **MLflow** tracks baseline and tuning runs; **Pandera** validates raw rows; **Pydantic** validates single-row API/batch inference.
+
+```mermaid
+flowchart TB
+  subgraph data
+    RAW[(data/raw CSV)] --> V[Pandera validate]
+    V --> S[Stratified split]
+    S --> P[(data/processed Parquet)]
+  end
+  subgraph train
+    P --> F[Feature pipeline fit on train]
+    F --> B[Baseline LR + MLflow]
+    F --> L[LightGBM search + MLflow]
+    B --> E[Evaluation + threshold on val]
+    L --> E
+    E --> CH[champion.yaml + joblib]
+  end
+  subgraph infer
+    CH --> BP[Batch predict CSV/Parquet]
+    CH --> API[FastAPI /predict]
+    P --> DR[Optional drift: train vs test]
+  end
+```
+
+Wider ASCII diagram and workflow conventions: [docs/ML_PROJECT_ROADMAP.md — Architecture Overview](docs/ML_PROJECT_ROADMAP.md#architecture-overview-ascii).
+
+## Dataset citation
+
+The project uses the **IBM Telco Customer Churn** tabular dataset (customer demographics, services, charges, and a `Churn` label). It is **not redistributed** in this repository. A common download location is **Kaggle** — [Telco Customer Churn](https://www.kaggle.com/datasets/blastchar/telco-customer-churn) — saved locally as `data/raw/WA_Fn-UseC_-Telco-Customer-Churn.csv`. Record provenance (URL, SHA256, row count) in [`data/raw/README.md`](data/raw/README.md) for reproducibility.
+
+## Limitations
+
+- **Portfolio scope:** no calibration curves, no feature store, no model registry/A/B pipeline, no production alerting.
+- **Single static snapshot:** one stratified split and one champion path; drift tooling is a **univariate demo** ([docs/DRIFT.md](docs/DRIFT.md)), not operational monitoring.
+- **Class imbalance:** handled via `class_weight` / LightGBM imbalance settings; business costs are discussed qualitatively in `docs/PROBLEM.md`, not as a live cost matrix in code.
+- **Environment:** optional Docker image for the API; training is expected to run on your machine or CI with sufficient RAM for LightGBM.
+- **Regenerated reports:** after `churn-evaluate`, summary paths are stored **relative to the repo** for portability; if you open an old local file with absolute paths, re-run evaluation to refresh.
 
 ## Problem statement (Phase 1)
 
@@ -190,7 +283,7 @@ python -m churn_ml.monitoring.run_drift --config configs/drift_report.yaml
 | `configs/` | `metrics.yaml`, `eval.yaml`, `champion.yaml`, `batch_predict.yaml`, training/tuning YAMLs, … |
 | `data/raw/` | Raw CSV (gitignored; see `data/raw/README.md`) |
 | `data/processed/` | Train / validation / test artifacts |
-| `docs/` | Roadmap, **PROBLEM.md**, **EDA_LEAKAGE_CHECKLIST.md** |
+| `docs/` | Roadmap, **PROBLEM.md**, **DRIFT.md**, **EDA_LEAKAGE_CHECKLIST.md** |
 | `models/` | Serialized pipelines (gitignored) |
 | `notebooks/` | EDA + end-to-end walkthrough (`_walkthrough_outputs/` gitignored) |
 | `predictions/` | Batch scoring outputs (gitignored except `.gitkeep`) |
@@ -226,7 +319,8 @@ chmod +x scripts/*.sh
 | 8 — Evaluation | **Done** — `churn-evaluate` / `python -m churn_ml.evaluation.run`, `configs/eval.yaml`, threshold on val, test one-shot, `reports/evaluation_summary.*`, `configs/champion.yaml` |
 | 9 — Batch inference | **Done** — `churn-batch-predict` / `python -m churn_ml.batch_predict.run`, Pydantic rows, `configs/batch_predict.yaml`, `predictions/` + metadata JSON |
 | 10 — Serving & monitoring | **Done** — `churn-serve` / FastAPI `/health` + `/predict`, `churn-drift` / `docs/DRIFT.md`, optional `docker/` |
-| 11+ | Pending |
+| 11 — Documentation & release | **Done** — README quick start, results table, Mermaid architecture, limitations, dataset citation, [CHANGELOG.md](CHANGELOG.md), `v1.0.x` |
+| 12+ | Backlog (roadmap) |
 
 ## License
 

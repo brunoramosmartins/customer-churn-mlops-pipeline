@@ -62,7 +62,7 @@ Command examples: [Appendix: GitHub CLI command reference](#appendix-github-cli-
 
 ## Repository Structure (Target Tree)
 
-Add **`churn_ml/api/`** (or `serving/`), extra **CLI modules**, and **`reports/` drift outputs** when you reach Phases 9–10—not before.
+Phases 9–10 add **`churn_ml/batch_predict`**, **`churn_ml/serve`**, **`churn_ml/monitoring`**, and optional drift outputs under **`reports/`**.
 
 ```
 customer-churn-mlops-pipeline/
@@ -286,8 +286,8 @@ Phases **0–12** (was 0–14): MLflow starts with the **first** training run; *
 
 **Tasks**
 
-- [ ] README: problem, metrics, train/eval/serve commands, results table, limitations.
-- [ ] Architecture (Mermaid or link to this doc’s diagram); `CHANGELOG.md` for `v1.0.0`; dataset citation.
+- [x] README: problem, metrics, train/eval/serve commands, results table, limitations.
+- [x] Architecture (Mermaid or link to this doc’s diagram); `CHANGELOG.md` for `v1.0.0`; dataset citation.
 
 **Deliverables:** New reader reproduces core flow from README (given data access).
 
