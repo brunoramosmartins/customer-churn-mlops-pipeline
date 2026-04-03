@@ -21,11 +21,11 @@ End-to-end machine learning project for **Telco customer churn** (binary classif
 ```bash
 python -m venv .venv
 .venv\Scripts\activate          # Windows — on macOS/Linux: source .venv/bin/activate
-pip install -e ".[dev]"
+pip install -e ".[dev,portfolio]"
 pytest -q
 ```
 
-CI uses **`tests/fixtures/telco_sample.csv`** — no full dataset needed for `pytest`.
+CI installs **`.[dev,portfolio]`** so Phase 10 API and drift tests run. Core training still works with `pip install -e ".[dev]"` if you skip serving locally.
 
 ## Data — full Telco file (manual)
 
@@ -148,6 +148,41 @@ python -m churn_ml.batch_predict.run -i sample.parquet -o predictions/scored.par
 
 Batch outputs under `predictions/` are **gitignored** (except `.gitkeep`). Copy the champion joblib to a versioned name (e.g. `models/champion_v1.joblib`) in your release process if you want a stable path; `artifact_version` in metadata records the logical label.
 
+## HTTP API and drift (Phase 10)
+
+**Serving:** FastAPI loads the champion pipeline and threshold at startup (same contract as batch: [`configs/champion.yaml`](configs/champion.yaml), [`configs/features.yaml`](configs/features.yaml)). Optional env: `CHURN_PROJECT_ROOT`, `CHURN_CHAMPION_MANIFEST`, `CHURN_FEATURES_CONFIG`.
+
+```bash
+pip install -e ".[portfolio]"
+churn-serve
+# or: python -m churn_ml.serve.cli
+```
+
+**Health**
+
+```bash
+curl -s http://127.0.0.1:8000/health
+```
+
+**Predict** (one JSON object per request — same fields as a Telco row; `Churn` optional)
+
+```bash
+curl -s -X POST http://127.0.0.1:8000/predict ^
+  -H "Content-Type: application/json" ^
+  -d "{\"customerID\":\"7590-VHVEG\",\"gender\":\"Female\",\"SeniorCitizen\":0,\"Partner\":\"Yes\",\"Dependents\":\"No\",\"tenure\":1,\"PhoneService\":\"No\",\"MultipleLines\":\"No phone service\",\"InternetService\":\"DSL\",\"OnlineSecurity\":\"No\",\"OnlineBackup\":\"No\",\"DeviceProtection\":\"No\",\"TechSupport\":\"No\",\"StreamingTV\":\"No\",\"StreamingMovies\":\"No\",\"Contract\":\"Month-to-month\",\"PaperlessBilling\":\"Yes\",\"PaymentMethod\":\"Electronic check\",\"MonthlyCharges\":29.85,\"TotalCharges\":null}"
+```
+
+On **bash**, use a single-quoted JSON body or a `heredoc` instead of `^` line continuation.
+
+**Drift (reference vs current table):** univariate KS + chi-square on modeling columns; outputs `reports/drift_report.html` and `reports/drift_summary.json`. Conceptual note: [docs/DRIFT.md](docs/DRIFT.md). Defaults: [`configs/drift_report.yaml`](configs/drift_report.yaml).
+
+```bash
+python -m churn_ml.monitoring.run_drift --config configs/drift_report.yaml
+# or: churn-drift --config configs/drift_report.yaml
+```
+
+**Docker (optional):** [docker/README.md](docker/README.md).
+
 ## Repository layout (summary)
 
 | Path | Purpose |
@@ -159,9 +194,9 @@ Batch outputs under `predictions/` are **gitignored** (except `.gitkeep`). Copy 
 | `models/` | Serialized pipelines (gitignored) |
 | `notebooks/` | EDA + end-to-end walkthrough (`_walkthrough_outputs/` gitignored) |
 | `predictions/` | Batch scoring outputs (gitignored except `.gitkeep`) |
-| `reports/` | Figures (`phase8_*`, EDA), `evaluation_summary.*`, `batch_predict_metadata.json` |
+| `reports/` | Figures (`phase8_*`, EDA), `evaluation_summary.*`, `batch_predict_metadata.json`, optional `drift_report.html` / `drift_summary.json` |
 | `scripts/` | GitHub CLI automation |
-| `src/churn_ml/` | `metrics`, `data`, `eda`, `features`, `models`, `evaluation`, `batch_predict` |
+| `src/churn_ml/` | `metrics`, `data`, `eda`, `features`, `models`, `evaluation`, `batch_predict`, `serve`, `monitoring` |
 | `tests/` | Pytest + `fixtures/telco_sample.csv` for CI |
 
 ## GitHub automation (Bash + `gh`)
@@ -190,7 +225,8 @@ chmod +x scripts/*.sh
 | 7 — LightGBM | **Done** — `churn-train-lightgbm` / `python -m churn_ml.models.run_lightgbm`, `configs/tune_lightgbm.yaml`, `configs/lightgbm_best.yaml`, `models/lightgbm_tuned.joblib`, MLflow nested trials |
 | 8 — Evaluation | **Done** — `churn-evaluate` / `python -m churn_ml.evaluation.run`, `configs/eval.yaml`, threshold on val, test one-shot, `reports/evaluation_summary.*`, `configs/champion.yaml` |
 | 9 — Batch inference | **Done** — `churn-batch-predict` / `python -m churn_ml.batch_predict.run`, Pydantic rows, `configs/batch_predict.yaml`, `predictions/` + metadata JSON |
-| 10+ | Pending |
+| 10 — Serving & monitoring | **Done** — `churn-serve` / FastAPI `/health` + `/predict`, `churn-drift` / `docs/DRIFT.md`, optional `docker/` |
+| 11+ | Pending |
 
 ## License
 

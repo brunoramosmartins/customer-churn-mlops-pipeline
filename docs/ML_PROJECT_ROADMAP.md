@@ -112,7 +112,7 @@ Phases **0–12** (was 0–14): MLflow starts with the **first** training run; *
 **Tasks**
 
 - [ ] Add `pyproject.toml` or `requirements.txt` (+ optional `requirements-dev.txt`).
-- [ ] Pin `pandas`, `scikit-learn`, `mlflow` (used from Phase 6 onward); add `fastapi` / `pydantic` when you reach Phase 10.
+- [ ] Pin `pandas`, `scikit-learn`, `mlflow` (used from Phase 6 onward); `fastapi` / `uvicorn` live under optional **`[portfolio]`** (Phase 10).
 - [ ] `.gitignore`: `data/raw/*.csv`, `mlruns/`, `.env`, venvs, caches.
 - [ ] `.env.example` (no secrets). Optional: `pre-commit` + `ruff` or `black`.
 - [ ] `src/churn_ml/`, `tests/` with one smoke test; document editable install.
@@ -270,9 +270,9 @@ Phases **0–12** (was 0–14): MLflow starts with the **first** training run; *
 
 **Tasks**
 
-- [ ] FastAPI: `POST /predict`, `GET /health`; load model at startup; `curl` example in README.
-- [ ] **Docker:** optional—`Dockerfile` / compose only if you want; do **not** block Phase 10 on containers.
-- [ ] **Monitoring:** one Evidently (or similar) **drift report** (reference vs holdout/current slice) + **short conceptual note** in `docs/` (what drift means, when you would retrain)—no full on-call runbook required for MVP.
+- [x] FastAPI: `POST /predict`, `GET /health`; load model at startup; `curl` example in README.
+- [x] **Docker:** optional—`Dockerfile` / compose only if you want; do **not** block Phase 10 on containers.
+- [x] **Monitoring:** one Evidently (or similar) **drift report** (reference vs holdout/current slice) + **short conceptual note** in `docs/` (what drift means, when you would retrain)—no full on-call runbook required for MVP.
 
 **Deliverables:** API runs locally; one regenerable drift artifact or script; optional Docker docs marked optional.
 
