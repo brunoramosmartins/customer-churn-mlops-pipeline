@@ -24,6 +24,10 @@ models/*
 !models/.gitkeep
 mlruns/
 
+# Batch prediction outputs (keep .gitkeep only)
+predictions/*
+!predictions/.gitkeep
+
 # Jupyter
 .ipynb_checkpoints/
 notebooks/_walkthrough_outputs/

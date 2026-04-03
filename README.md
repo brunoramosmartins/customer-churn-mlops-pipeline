@@ -133,19 +133,35 @@ python -m churn_ml.evaluation.run
 # Optional: --champion path/to/model.joblib  ·  --root .  (for resolving relative paths in eval.yaml)
 ```
 
+## Packaging and batch inference (Phase 9)
+
+Load the **frozen champion** from [`configs/champion.yaml`](configs/champion.yaml) (joblib `Pipeline` + threshold), validate each input row with a **Pydantic** model derived from [`configs/features.yaml`](configs/features.yaml) (`extra="forbid"` — unknown columns fail fast), then write **CSV or Parquet** with `churn_probability`, `predicted_churn` (`Yes`/`No`), and `actual_churn` if the input included the target column.
+
+- **Config:** [`configs/batch_predict.yaml`](configs/batch_predict.yaml) — manifest path, default output (`predictions/batch_predictions.parquet`), metadata path, `artifact_version` string.
+- **Metadata:** [`reports/batch_predict_metadata.json`](reports/batch_predict_metadata.json) — UTC timestamp, optional `git_sha`, `input_sha256`, resolved model path, threshold, row count (use `--no-metadata` to skip).
+
+```bash
+python -m churn_ml.batch_predict.run -i data/raw/WA_Fn-UseC_-Telco-Customer-Churn.csv
+python -m churn_ml.batch_predict.run -i sample.parquet -o predictions/scored.parquet
+# or: churn-batch-predict …
+```
+
+Batch outputs under `predictions/` are **gitignored** (except `.gitkeep`). Copy the champion joblib to a versioned name (e.g. `models/champion_v1.joblib`) in your release process if you want a stable path; `artifact_version` in metadata records the logical label.
+
 ## Repository layout (summary)
 
 | Path | Purpose |
 |------|---------|
-| `configs/` | `metrics.yaml`, `eval.yaml`, `champion.yaml` (Phase 8), `split.yaml`, `features.yaml`, training YAMLs, … |
+| `configs/` | `metrics.yaml`, `eval.yaml`, `champion.yaml`, `batch_predict.yaml`, training/tuning YAMLs, … |
 | `data/raw/` | Raw CSV (gitignored; see `data/raw/README.md`) |
 | `data/processed/` | Train / validation / test artifacts |
 | `docs/` | Roadmap, **PROBLEM.md**, **EDA_LEAKAGE_CHECKLIST.md** |
 | `models/` | Serialized pipelines (gitignored) |
 | `notebooks/` | EDA + end-to-end walkthrough (`_walkthrough_outputs/` gitignored) |
-| `reports/` | Figures (`phase8_*`, EDA), `evaluation_summary.*` |
+| `predictions/` | Batch scoring outputs (gitignored except `.gitkeep`) |
+| `reports/` | Figures (`phase8_*`, EDA), `evaluation_summary.*`, `batch_predict_metadata.json` |
 | `scripts/` | GitHub CLI automation |
-| `src/churn_ml/` | `metrics`, `data`, `eda`, `features`, `models`, `evaluation` |
+| `src/churn_ml/` | `metrics`, `data`, `eda`, `features`, `models`, `evaluation`, `batch_predict` |
 | `tests/` | Pytest + `fixtures/telco_sample.csv` for CI |
 
 ## GitHub automation (Bash + `gh`)
@@ -173,7 +189,8 @@ chmod +x scripts/*.sh
 | 6 — Baseline + MLflow | **Done** — `churn_ml.models`, `churn-train-baseline` / `python -m churn_ml.models.run_baseline`, `configs/train_baseline.yaml`, `models/baseline.joblib`, `mlruns/` (local or remote via `MLFLOW_TRACKING_URI`) |
 | 7 — LightGBM | **Done** — `churn-train-lightgbm` / `python -m churn_ml.models.run_lightgbm`, `configs/tune_lightgbm.yaml`, `configs/lightgbm_best.yaml`, `models/lightgbm_tuned.joblib`, MLflow nested trials |
 | 8 — Evaluation | **Done** — `churn-evaluate` / `python -m churn_ml.evaluation.run`, `configs/eval.yaml`, threshold on val, test one-shot, `reports/evaluation_summary.*`, `configs/champion.yaml` |
-| 9+ | Pending |
+| 9 — Batch inference | **Done** — `churn-batch-predict` / `python -m churn_ml.batch_predict.run`, Pydantic rows, `configs/batch_predict.yaml`, `predictions/` + metadata JSON |
+| 10+ | Pending |
 
 ## License
 
