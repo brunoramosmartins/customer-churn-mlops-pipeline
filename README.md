@@ -82,7 +82,7 @@ python -m churn_ml.features.run -t data/processed/train.parquet -o models -c con
 # or: churn-features …
 ```
 
-Phase 6 can append a classifier step to the same `Pipeline` or load `feature_pipeline.joblib` and chain a model.
+Phases 6–7 append a classifier to the same preprocess `Pipeline` (or you can load `feature_pipeline.joblib` and chain a model separately).
 
 ## Baseline model and MLflow (Phase 6)
 
@@ -105,11 +105,25 @@ mlflow ui --backend-store-uri file:./mlruns
 # Then open http://127.0.0.1:5000
 ```
 
+## LightGBM tuning (Phase 7)
+
+**LightGBM only** (no RF/XGB sprawl): same preprocess as Phases 5–6, **`RandomizedSearchCV`** with **stratified K-fold on the train split only** (`roc_auc` by default). After refit on full train, reports the **same validation metrics** as the baseline for apples-to-apples comparison in MLflow. **`test.parquet` is not used** for tuning (reserved for Phase 8).
+
+- **Search space:** [`configs/tune_lightgbm.yaml`](configs/tune_lightgbm.yaml) — `n_splits`, `n_iter`, `param_distributions`, fixed `lightgbm` kwargs (`is_unbalance`, etc.).
+- **Outputs:** `models/lightgbm_tuned.joblib` (default) and auto-generated [`configs/lightgbm_best.yaml`](configs/lightgbm_best.yaml) (best hyperparameters + validation snapshot).
+- **MLflow:** parent run + **nested runs** per search trial (`cv_mean_roc_auc`, `cv_std_roc_auc`); parent logs best CV score, `val_*` metrics, and model artifacts. Use the same `experiment_name` as the baseline to compare runs in the UI.
+
+```bash
+python -m churn_ml.models.run_lightgbm
+python -m churn_ml.models.run_lightgbm --tune-config configs/tune_lightgbm.yaml -o models/lightgbm_tuned.joblib
+# or: churn-train-lightgbm …
+```
+
 ## Repository layout (summary)
 
 | Path | Purpose |
 |------|---------|
-| `configs/` | `metrics.yaml`, `split.yaml`, `features.yaml`, `train_baseline.yaml`, … |
+| `configs/` | `metrics.yaml`, `split.yaml`, `features.yaml`, `train_baseline.yaml`, `tune_lightgbm.yaml`, `lightgbm_best.yaml` (generated), … |
 | `data/raw/` | Raw CSV (gitignored; see `data/raw/README.md`) |
 | `data/processed/` | Train / validation / test artifacts |
 | `docs/` | Roadmap, **PROBLEM.md**, **EDA_LEAKAGE_CHECKLIST.md** |
@@ -143,7 +157,8 @@ chmod +x scripts/*.sh
 | 4 — Split | **Done** — `churn_ml.data.split`, `churn-split` / `python -m churn_ml.data.split`, `configs/split.yaml`, Parquet + manifest under `data/processed/` |
 | 5 — Features | **Done** — `churn_ml.features`, `churn-features` / `python -m churn_ml.features.run`, `configs/features.yaml`, `feature_pipeline.joblib` + manifest under `models/` |
 | 6 — Baseline + MLflow | **Done** — `churn_ml.models`, `churn-train-baseline` / `python -m churn_ml.models.run_baseline`, `configs/train_baseline.yaml`, `models/baseline.joblib`, `mlruns/` (local or remote via `MLFLOW_TRACKING_URI`) |
-| 7+ | Pending |
+| 7 — LightGBM | **Done** — `churn-train-lightgbm` / `python -m churn_ml.models.run_lightgbm`, `configs/tune_lightgbm.yaml`, `configs/lightgbm_best.yaml`, `models/lightgbm_tuned.joblib`, MLflow nested trials |
+| 8+ | Pending |
 
 ## License
 

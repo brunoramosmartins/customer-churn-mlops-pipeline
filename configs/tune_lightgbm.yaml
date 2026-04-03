@@ -1,0 +1,39 @@
+# Phase 7 — LightGBM + RandomizedSearchCV on train only (stratified CV).
+# Validation Parquet is used only for final reporting after refit (same harness as baseline).
+# Test Parquet must not be used for tuning (Phase 8).
+
+random_state: 42
+
+cv:
+  n_splits: 5
+  shuffle: true
+  n_iter: 18
+
+scoring: roc_auc
+
+# Fixed LightGBM arguments (not searched). is_unbalance helps with churn imbalance.
+lightgbm:
+  objective: binary
+  verbosity: -1
+  n_jobs: -1
+  random_state: 42
+  is_unbalance: true
+
+# sklearn Pipeline step name is "classifier" (LGBMClassifier).
+param_distributions:
+  classifier__learning_rate: [0.03, 0.05, 0.08, 0.1, 0.12]
+  classifier__num_leaves: [31, 47, 63, 96]
+  classifier__max_depth: [4, 6, 8, -1]
+  classifier__min_child_samples: [20, 40, 60, 100]
+  classifier__n_estimators: [100, 200, 350]
+  classifier__subsample: [0.75, 0.85, 1.0]
+  classifier__colsample_bytree: [0.75, 0.85, 1.0]
+  classifier__reg_lambda: [0.0, 0.5, 1.0, 5.0]
+
+mlflow:
+  experiment_name: telco-churn
+  run_name: lightgbm_random_search
+
+outputs:
+  model_path: models/lightgbm_tuned.joblib
+  best_config_path: configs/lightgbm_best.yaml

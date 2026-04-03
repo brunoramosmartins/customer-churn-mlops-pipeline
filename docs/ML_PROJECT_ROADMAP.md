@@ -225,10 +225,10 @@ Phases **0–12** (was 0–14): MLflow starts with the **first** training run; *
 
 **Tasks**
 
-- [ ] LightGBM with `RandomizedSearchCV` or small `Optuna` study; persist best params under `configs/`.
-- [ ] Log each run to MLflow; compare to baseline on **validation**.
+- [x] LightGBM with `RandomizedSearchCV` or small `Optuna` study; persist best params under `configs/`.
+- [x] Log each run to MLflow; compare to baseline on **validation**.
 
-**Deliverables:** Validation leaderboard; test set touched once in Phase 8.
+**Deliverables:** Validation leaderboard (MLflow nested trials + `val_*` on holdout val); test set touched once in Phase 8 (`churn_ml.models.run_lightgbm`, `configs/lightgbm_best.yaml`).
 
 **GitHub:** `feat/phase-7-lightgbm` · Milestone **Phase 7 — LightGBM & tuning** · Tag `v0.7-lightgbm` · Release **No**
 
