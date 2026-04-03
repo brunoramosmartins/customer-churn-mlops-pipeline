@@ -1,0 +1,9 @@
+# Defaults for python -m churn_ml.monitoring.run_drift --config configs/drift_report.yaml
+# Override paths if your splits live elsewhere.
+
+features_config: configs/features.yaml
+reference: data/processed/train.parquet
+current: data/processed/test.parquet
+output_html: reports/drift_report.html
+output_json: reports/drift_summary.json
+alpha: 0.05

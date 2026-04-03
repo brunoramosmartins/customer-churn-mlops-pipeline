@@ -19,6 +19,7 @@ dependencies = [
     "pyarrow>=14.0",
     "pyyaml>=6.0",
     "scikit-learn>=1.3",
+    "scipy>=1.11",
 ]
 
 [project.scripts]
@@ -30,10 +31,17 @@ churn-train-baseline = "churn_ml.models.run_baseline:cli"
 churn-train-lightgbm = "churn_ml.models.run_lightgbm:cli"
 churn-evaluate = "churn_ml.evaluation.run:cli"
 churn-batch-predict = "churn_ml.batch_predict.run:cli"
+churn-serve = "churn_ml.serve.cli:main"
+churn-drift = "churn_ml.monitoring.run_drift:cli"
 
 [project.optional-dependencies]
 dev = [
     "pytest>=7.0",
+]
+portfolio = [
+    "fastapi>=0.109",
+    "uvicorn[standard]>=0.27",
+    "httpx>=0.27",
 ]
 
 [tool.setuptools.packages.find]

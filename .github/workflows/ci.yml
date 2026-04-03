@@ -19,7 +19,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
-      - name: Install package and dev deps
-        run: pip install -e ".[dev]"
+      - name: Install package, dev, and portfolio (Phase 10 API tests)
+        run: pip install -e ".[dev,portfolio]"
       - name: Run tests
         run: pytest -q
