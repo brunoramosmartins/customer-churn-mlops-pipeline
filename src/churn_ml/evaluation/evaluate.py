@@ -28,6 +28,7 @@ from churn_ml.evaluation.plots import (
 )
 from churn_ml.evaluation.threshold import select_threshold
 from churn_ml.features.pipeline import load_features_config, select_feature_matrix
+from churn_ml.fsutil import path_relative_to_repo
 from churn_ml.metrics import (
     negative_class_label,
     positive_class_label,
@@ -174,10 +175,11 @@ def run_evaluation(
     val_at_t = _threshold_metrics_with_beta(y_val, proba_val, threshold, fbeta_beta)
     test_at_t = _threshold_metrics_with_beta(y_test, proba_test, threshold, fbeta_beta)
 
+    model_report_path = path_relative_to_repo(root, path)
     summary: dict[str, Any] = {
         "phase": 8,
         "champion": {
-            "model_path_resolved": str(path),
+            "model_path_resolved": model_report_path,
             "model_path_source": which,
             "threshold": threshold,
             "threshold_selected_on": "validation",
@@ -203,12 +205,16 @@ def run_evaluation(
             },
         },
         "figures": {
-            "roc_validation": str(fig_dir / f"{stem}_roc_validation.png"),
-            "pr_validation": str(fig_dir / f"{stem}_pr_validation.png"),
-            "roc_test": str(fig_dir / f"{stem}_roc_test.png"),
-            "pr_test": str(fig_dir / f"{stem}_pr_test.png"),
-            "threshold_sweep_validation": str(fig_dir / f"{stem}_threshold_sweep_validation.png"),
-            "confusion_matrix_test": str(fig_dir / f"{stem}_confusion_matrix_test.png"),
+            "roc_validation": path_relative_to_repo(root, fig_dir / f"{stem}_roc_validation.png"),
+            "pr_validation": path_relative_to_repo(root, fig_dir / f"{stem}_pr_validation.png"),
+            "roc_test": path_relative_to_repo(root, fig_dir / f"{stem}_roc_test.png"),
+            "pr_test": path_relative_to_repo(root, fig_dir / f"{stem}_pr_test.png"),
+            "threshold_sweep_validation": path_relative_to_repo(
+                root, fig_dir / f"{stem}_threshold_sweep_validation.png"
+            ),
+            "confusion_matrix_test": path_relative_to_repo(
+                root, fig_dir / f"{stem}_confusion_matrix_test.png"
+            ),
         },
         "notes": [
             "Calibration plots are out of scope for portfolio v1 (roadmap).",
@@ -233,7 +239,7 @@ def run_evaluation(
         "",
         "## Champion",
         "",
-        f"- **Model:** `{path}` (source: `{which}`)",
+        f"- **Model:** `{model_report_path}` (source: `{which}`)",
         f"- **Threshold (selected on validation):** `{threshold:.6f}`",
         f"- **Recall floor used:** `{min_recall}`; **F-beta (maximized under floor):** beta = `{fbeta_beta}`",
         "",
@@ -281,13 +287,12 @@ def run_evaluation(
     md_path.write_text("\n".join(md_lines) + "\n", encoding="utf-8")
 
     try:
-        model_rel = str(path.relative_to(root))
+        model_rel = path.relative_to(root.resolve()).as_posix()
     except ValueError:
-        model_rel = str(path)
+        model_rel = path.as_posix()
     champ_doc = {
         "_phase": 8,
         "model_path": model_rel,
-        "model_path_resolved": str(path),
         "threshold": float(threshold),
         "threshold_selected_on": "validation",
         "min_recall_churn_floor": min_recall,

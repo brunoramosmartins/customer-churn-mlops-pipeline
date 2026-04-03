@@ -1,0 +1,160 @@
+{
+  "reference": "C:\\Users\\bruno\\Desktop\\Projetos\\customer-churn-mlops-pipeline\\data\\processed\\train.parquet",
+  "current": "C:\\Users\\bruno\\Desktop\\Projetos\\customer-churn-mlops-pipeline\\data\\processed\\test.parquet",
+  "alpha": 0.05,
+  "n_columns_flagged": 0,
+  "columns": [
+    {
+      "column": "SeniorCitizen",
+      "kind": "numeric",
+      "statistic": 0.001233600379888264,
+      "p_value": 1.0,
+      "drift_flag": false,
+      "note": null
+    },
+    {
+      "column": "tenure",
+      "kind": "numeric",
+      "statistic": 0.02364608663456273,
+      "p_value": 0.7044963440336708,
+      "drift_flag": false,
+      "note": null
+    },
+    {
+      "column": "MonthlyCharges",
+      "kind": "numeric",
+      "statistic": 0.037603218301585445,
+      "p_value": 0.16565561359547232,
+      "drift_flag": false,
+      "note": null
+    },
+    {
+      "column": "TotalCharges",
+      "kind": "numeric",
+      "statistic": 0.018612491812121913,
+      "p_value": 0.9177144377687299,
+      "drift_flag": false,
+      "note": null
+    },
+    {
+      "column": "gender",
+      "kind": "categorical",
+      "statistic": 0.09687660667855612,
+      "p_value": 0.7556105209168659,
+      "drift_flag": false,
+      "note": null
+    },
+    {
+      "column": "Partner",
+      "kind": "categorical",
+      "statistic": 0.11179010024017545,
+      "p_value": 0.7381152640587514,
+      "drift_flag": false,
+      "note": null
+    },
+    {
+      "column": "Dependents",
+      "kind": "categorical",
+      "statistic": 1.062263151878681,
+      "p_value": 0.3026995795241512,
+      "drift_flag": false,
+      "note": null
+    },
+    {
+      "column": "PhoneService",
+      "kind": "categorical",
+      "statistic": 2.1341061388353544,
+      "p_value": 0.14405441080396547,
+      "drift_flag": false,
+      "note": null
+    },
+    {
+      "column": "MultipleLines",
+      "kind": "categorical",
+      "statistic": 4.676564092061679,
+      "p_value": 0.09649326690941823,
+      "drift_flag": false,
+      "note": null
+    },
+    {
+      "column": "InternetService",
+      "kind": "categorical",
+      "statistic": 1.1445458563560291,
+      "p_value": 0.5642414996978582,
+      "drift_flag": false,
+      "note": null
+    },
+    {
+      "column": "OnlineSecurity",
+      "kind": "categorical",
+      "statistic": 0.6475404366455841,
+      "p_value": 0.7234164511287089,
+      "drift_flag": false,
+      "note": null
+    },
+    {
+      "column": "OnlineBackup",
+      "kind": "categorical",
+      "statistic": 1.9233052286440913,
+      "p_value": 0.3822606342859356,
+      "drift_flag": false,
+      "note": null
+    },
+    {
+      "column": "DeviceProtection",
+      "kind": "categorical",
+      "statistic": 1.1994266745201432,
+      "p_value": 0.5489689824929311,
+      "drift_flag": false,
+      "note": null
+    },
+    {
+      "column": "TechSupport",
+      "kind": "categorical",
+      "statistic": 1.9464613188148643,
+      "p_value": 0.377860326066694,
+      "drift_flag": false,
+      "note": null
+    },
+    {
+      "column": "StreamingTV",
+      "kind": "categorical",
+      "statistic": 2.447907678886696,
+      "p_value": 0.29406517885073435,
+      "drift_flag": false,
+      "note": null
+    },
+    {
+      "column": "StreamingMovies",
+      "kind": "categorical",
+      "statistic": 1.6153010464613735,
+      "p_value": 0.44590447869471694,
+      "drift_flag": false,
+      "note": null
+    },
+    {
+      "column": "Contract",
+      "kind": "categorical",
+      "statistic": 0.25808025432921466,
+      "p_value": 0.87893869552023,
+      "drift_flag": false,
+      "note": null
+    },
+    {
+      "column": "PaperlessBilling",
+      "kind": "categorical",
+      "statistic": 0.04452638589834326,
+      "p_value": 0.8328773126142368,
+      "drift_flag": false,
+      "note": null
+    },
+    {
+      "column": "PaymentMethod",
+      "kind": "categorical",
+      "statistic": 0.64554618574968,
+      "p_value": 0.8859309400695439,
+      "drift_flag": false,
+      "note": null
+    }
+  ]
+}

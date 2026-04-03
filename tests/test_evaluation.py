@@ -120,6 +120,8 @@ def test_run_evaluation_end_to_end(tmp_path: Path):
     assert "threshold" in sj["champion"]
     champ_out = yaml.safe_load((tmp_path / "champion_out.yaml").read_text(encoding="utf-8"))
     assert champ_out["threshold"] == summary["champion"]["threshold"]
+    assert "model_path" in champ_out
+    assert "model_path_resolved" not in champ_out
 
 
 def test_eval_cli(tmp_path: Path):

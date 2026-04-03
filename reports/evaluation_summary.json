@@ -1,7 +1,7 @@
 {
   "phase": 8,
   "champion": {
-    "model_path_resolved": "C:\\Users\\bruno\\Desktop\\Projetos\\customer-churn-mlops-pipeline\\models\\lightgbm_tuned.joblib",
+    "model_path_resolved": "models/lightgbm_tuned.joblib",
     "model_path_source": "champion_model_path",
     "threshold": 0.47000000000000003,
     "threshold_selected_on": "validation",
@@ -41,12 +41,12 @@
     }
   },
   "figures": {
-    "roc_validation": "C:\\Users\\bruno\\Desktop\\Projetos\\customer-churn-mlops-pipeline\\reports\\figures\\phase8_roc_validation.png",
-    "pr_validation": "C:\\Users\\bruno\\Desktop\\Projetos\\customer-churn-mlops-pipeline\\reports\\figures\\phase8_pr_validation.png",
-    "roc_test": "C:\\Users\\bruno\\Desktop\\Projetos\\customer-churn-mlops-pipeline\\reports\\figures\\phase8_roc_test.png",
-    "pr_test": "C:\\Users\\bruno\\Desktop\\Projetos\\customer-churn-mlops-pipeline\\reports\\figures\\phase8_pr_test.png",
-    "threshold_sweep_validation": "C:\\Users\\bruno\\Desktop\\Projetos\\customer-churn-mlops-pipeline\\reports\\figures\\phase8_threshold_sweep_validation.png",
-    "confusion_matrix_test": "C:\\Users\\bruno\\Desktop\\Projetos\\customer-churn-mlops-pipeline\\reports\\figures\\phase8_confusion_matrix_test.png"
+    "roc_validation": "reports/figures/phase8_roc_validation.png",
+    "pr_validation": "reports/figures/phase8_pr_validation.png",
+    "roc_test": "reports/figures/phase8_roc_test.png",
+    "pr_test": "reports/figures/phase8_pr_test.png",
+    "threshold_sweep_validation": "reports/figures/phase8_threshold_sweep_validation.png",
+    "confusion_matrix_test": "reports/figures/phase8_confusion_matrix_test.png"
   },
   "notes": [
     "Calibration plots are out of scope for portfolio v1 (roadmap).",

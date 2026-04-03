@@ -17,6 +17,7 @@ from pydantic import TypeAdapter
 
 from churn_ml.batch_predict.row_model import build_inference_row_model
 from churn_ml.features.pipeline import load_features_config, select_feature_matrix
+from churn_ml.fsutil import path_relative_to_repo
 from churn_ml.metrics import negative_class_label, positive_class_label, target_column
 
 
@@ -157,7 +158,7 @@ def batch_predict(
         "timestamp_utc": datetime.now(timezone.utc).isoformat(),
         "artifact_version": str(batch_cfg["artifact_version"]),
         "champion_manifest": _path_for_metadata(root, champion_manifest_path),
-        "model_path_resolved": str(model_path),
+        "model_path_resolved": path_relative_to_repo(root, model_path),
         "threshold": threshold,
         "threshold_source": "override" if threshold_override is not None else "champion_manifest",
         "input_path": str(input_path),
@@ -183,7 +184,4 @@ def _resolve_out(root: Path, p: str | Path) -> Path:
 
 
 def _path_for_metadata(root: Path, p: Path) -> str:
-    try:
-        return str(p.resolve().relative_to(root))
-    except ValueError:
-        return str(p.resolve())
+    return path_relative_to_repo(root, p)
