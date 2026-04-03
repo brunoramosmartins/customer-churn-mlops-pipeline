@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"/><title>Drift report</title>
+<style>
+body { font-family: system-ui, sans-serif; margin: 1.5rem; }
+table { border-collapse: collapse; width: 100%; max-width: 56rem; }
+th, td { border: 1px solid #ccc; padding: 0.35rem 0.5rem; text-align: left; }
+th { background: #f4f4f4; }
+</style>
+</head>
+<body>
+<h1>Data drift (univariate)</h1>
+<p>Reference: <code>C:\Users\bruno\Desktop\Projetos\customer-churn-mlops-pipeline\data\processed\train.parquet</code><br/>
+Current: <code>C:\Users\bruno\Desktop\Projetos\customer-churn-mlops-pipeline\data\processed\test.parquet</code><br/>
+Flag if p-value &lt; 0.05 (exploratory; not a substitute for production monitoring).</p>
+<table>
+<thead><tr><th>Column</th><th>Kind</th><th>Statistic</th><th>p-value</th><th>Drift?</th><th>Note</th></tr></thead>
+<tbody>
+<tr><td>SeniorCitizen</td><td>numeric</td><td>0.0012336</td><td>1</td><td><b>no</b></td><td></td></tr>
+<tr><td>tenure</td><td>numeric</td><td>0.0236461</td><td>0.704496</td><td><b>no</b></td><td></td></tr>
+<tr><td>MonthlyCharges</td><td>numeric</td><td>0.0376032</td><td>0.165656</td><td><b>no</b></td><td></td></tr>
+<tr><td>TotalCharges</td><td>numeric</td><td>0.0186125</td><td>0.917714</td><td><b>no</b></td><td></td></tr>
+<tr><td>gender</td><td>categorical</td><td>0.0968766</td><td>0.755611</td><td><b>no</b></td><td></td></tr>
+<tr><td>Partner</td><td>categorical</td><td>0.11179</td><td>0.738115</td><td><b>no</b></td><td></td></tr>
+<tr><td>Dependents</td><td>categorical</td><td>1.06226</td><td>0.3027</td><td><b>no</b></td><td></td></tr>
+<tr><td>PhoneService</td><td>categorical</td><td>2.13411</td><td>0.144054</td><td><b>no</b></td><td></td></tr>
+<tr><td>MultipleLines</td><td>categorical</td><td>4.67656</td><td>0.0964933</td><td><b>no</b></td><td></td></tr>
+<tr><td>InternetService</td><td>categorical</td><td>1.14455</td><td>0.564241</td><td><b>no</b></td><td></td></tr>
+<tr><td>OnlineSecurity</td><td>categorical</td><td>0.64754</td><td>0.723416</td><td><b>no</b></td><td></td></tr>
+<tr><td>OnlineBackup</td><td>categorical</td><td>1.92331</td><td>0.382261</td><td><b>no</b></td><td></td></tr>
+<tr><td>DeviceProtection</td><td>categorical</td><td>1.19943</td><td>0.548969</td><td><b>no</b></td><td></td></tr>
+<tr><td>TechSupport</td><td>categorical</td><td>1.94646</td><td>0.37786</td><td><b>no</b></td><td></td></tr>
+<tr><td>StreamingTV</td><td>categorical</td><td>2.44791</td><td>0.294065</td><td><b>no</b></td><td></td></tr>
+<tr><td>StreamingMovies</td><td>categorical</td><td>1.6153</td><td>0.445904</td><td><b>no</b></td><td></td></tr>
+<tr><td>Contract</td><td>categorical</td><td>0.25808</td><td>0.878939</td><td><b>no</b></td><td></td></tr>
+<tr><td>PaperlessBilling</td><td>categorical</td><td>0.0445264</td><td>0.832877</td><td><b>no</b></td><td></td></tr>
+<tr><td>PaymentMethod</td><td>categorical</td><td>0.645546</td><td>0.885931</td><td><b>no</b></td><td></td></tr>
+</tbody>
+</table>
+<p>See <code>docs/DRIFT.md</code> for interpretation.</p>
+</body>
+</html>

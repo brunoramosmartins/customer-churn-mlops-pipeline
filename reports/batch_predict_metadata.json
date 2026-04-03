@@ -1,0 +1,14 @@
+{
+  "timestamp_utc": "2026-04-03T02:06:59.684937+00:00",
+  "artifact_version": "v1",
+  "champion_manifest": "configs\\champion.yaml",
+  "model_path_resolved": "C:\\Users\\bruno\\Desktop\\Projetos\\customer-churn-mlops-pipeline\\models\\lightgbm_tuned.joblib",
+  "threshold": 0.47000000000000003,
+  "threshold_source": "champion_manifest",
+  "input_path": "C:\\Users\\bruno\\Desktop\\Projetos\\customer-churn-mlops-pipeline\\data\\raw\\WA_Fn-UseC_-Telco-Customer-Churn.csv",
+  "input_sha256": "88be4b93fbe0cc83421af1c503794c97c342eca914c1576db7c276e61d61358a",
+  "n_rows": 7043,
+  "output_path": "C:\\Users\\bruno\\Desktop\\Projetos\\customer-churn-mlops-pipeline\\predictions\\batch_predictions.parquet",
+  "git_sha": "075ddbb6bd355d1713f170ad5de723442dd6a54c",
+  "git_sha_error": null
+}

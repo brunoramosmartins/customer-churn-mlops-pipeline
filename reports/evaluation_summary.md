@@ -2,7 +2,7 @@
 
 ## Champion
 
-- **Model:** `C:\Users\bruno\Desktop\Projetos\customer-churn-mlops-pipeline\models\lightgbm_tuned.joblib` (source: `champion_model_path`)
+- **Model:** `models/lightgbm_tuned.joblib` (source: `champion_model_path`)
 - **Threshold (selected on validation):** `0.470000`
 - **Recall floor used:** `0.5`; **F-beta (maximized under floor):** beta = `1.25`
 
@@ -41,12 +41,12 @@
 
 ## Figures
 
-- `roc_validation` → `C:\Users\bruno\Desktop\Projetos\customer-churn-mlops-pipeline\reports\figures\phase8_roc_validation.png`
-- `pr_validation` → `C:\Users\bruno\Desktop\Projetos\customer-churn-mlops-pipeline\reports\figures\phase8_pr_validation.png`
-- `roc_test` → `C:\Users\bruno\Desktop\Projetos\customer-churn-mlops-pipeline\reports\figures\phase8_roc_test.png`
-- `pr_test` → `C:\Users\bruno\Desktop\Projetos\customer-churn-mlops-pipeline\reports\figures\phase8_pr_test.png`
-- `threshold_sweep_validation` → `C:\Users\bruno\Desktop\Projetos\customer-churn-mlops-pipeline\reports\figures\phase8_threshold_sweep_validation.png`
-- `confusion_matrix_test` → `C:\Users\bruno\Desktop\Projetos\customer-churn-mlops-pipeline\reports\figures\phase8_confusion_matrix_test.png`
+- `roc_validation` → `reports/figures/phase8_roc_validation.png`
+- `pr_validation` → `reports/figures/phase8_pr_validation.png`
+- `roc_test` → `reports/figures/phase8_roc_test.png`
+- `pr_test` → `reports/figures/phase8_pr_test.png`
+- `threshold_sweep_validation` → `reports/figures/phase8_threshold_sweep_validation.png`
+- `confusion_matrix_test` → `reports/figures/phase8_confusion_matrix_test.png`
 
 ## Notes
 

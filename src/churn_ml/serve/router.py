@@ -16,6 +16,7 @@ router = APIRouter()
 
 @router.get("/health")
 def health(request: Request) -> dict[str, Any]:
+    """Liveness: whether the champion pipeline is attached to app state."""
     st = getattr(request.app.state, "churn", None)
     if st is None:
         return {"status": "degraded", "model_loaded": False}
@@ -29,6 +30,7 @@ def health(request: Request) -> dict[str, Any]:
 
 @router.post("/predict")
 def predict(request: Request, row: dict[str, Any] = Body(...)) -> dict[str, Any]:
+    """Score one Telco row; body must match the Pydantic inference model (no extra keys)."""
     st = getattr(request.app.state, "churn", None)
     if st is None:
         return {"error": "model not loaded"}
