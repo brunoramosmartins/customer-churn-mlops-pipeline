@@ -1,0 +1,18 @@
+# Phase 8 — Threshold on validation; report test once (ranking + frozen threshold).
+
+# Champion artifact (joblib Pipeline). If missing, evaluation tries fallback_model_path.
+champion_model_path: models/lightgbm_tuned.joblib
+fallback_model_path: models/baseline.joblib
+
+threshold_search:
+  # null → use configs/metrics.yaml threshold_policy.suggested_minimum_recall_churn
+  min_recall_churn: null
+  # Among thresholds meeting recall floor, maximize F-beta (beta > 1 weights recall).
+  fbeta_beta: 1.25
+  n_threshold_grid: 99
+
+outputs:
+  figure_dir: reports/figures
+  summary_json: reports/evaluation_summary.json
+  summary_md: reports/evaluation_summary.md
+  champion_manifest: configs/champion.yaml

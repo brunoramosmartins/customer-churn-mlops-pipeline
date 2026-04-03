@@ -1,0 +1,17 @@
+# Frozen champion for packaging / batch inference (Phase 9+).
+_phase: 8
+model_path: models\lightgbm_tuned.joblib
+model_path_resolved: C:\Users\bruno\Desktop\Projetos\customer-churn-mlops-pipeline\models\lightgbm_tuned.joblib
+threshold: 0.47000000000000003
+threshold_selected_on: validation
+min_recall_churn_floor: 0.5
+fbeta_beta: 1.25
+constraint_satisfied: true
+test_ranking_metrics:
+  roc_auc: 0.8508871116013974
+  average_precision: 0.6581214010192473
+test_at_frozen_threshold:
+  recall_churn: 0.8428571428571429
+  precision_churn: 0.5186813186813187
+  f1: 0.6421768707482993
+  fbeta: 0.6775910364145659
