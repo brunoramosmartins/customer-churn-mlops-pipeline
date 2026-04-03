@@ -10,4 +10,5 @@ python -m churn_ml.eda.run --input path/to/WA_Fn-UseC_-Telco-Customer-Churn.csv
 
 Outputs: `reports/eda_summary.md`, `reports/eda_summary.json`, `reports/figures/`.
 
-Open `01_eda.ipynb` if you prefer stepping through the same flow in Jupyter.
+- `01_eda.ipynb` — same EDA pipeline as the CLI, step by step.
+- `02_pipeline_walkthrough.ipynb` — **end-to-end narrative** (validate → split → features → baseline + MLflow) using `churn_ml` APIs, with design notes (e.g. imputation trade-offs). Writes to `notebooks/_walkthrough_outputs/` (gitignored).
