@@ -210,10 +210,10 @@ Phases **0–12** (was 0–14): MLflow starts with the **first** training run; *
 
 **Tasks**
 
-- [ ] Train baseline (`class_weight` if needed); log run to MLflow; save `models/baseline.joblib`.
-- [ ] Document `MLFLOW_TRACKING_URI` and `mlflow ui` in README.
+- [x] Train baseline (`class_weight` if needed); log run to MLflow; save `models/baseline.joblib`.
+- [x] Document `MLFLOW_TRACKING_URI` and `mlflow ui` in README.
 
-**Deliverables:** Comparable runs in MLflow; `mlruns/` gitignored.
+**Deliverables:** Comparable runs in MLflow; `mlruns/` gitignored (`churn_ml.models.run_baseline`, `configs/train_baseline.yaml`).
 
 **GitHub:** `feat/phase-6-baseline-mlflow` · Milestone **Phase 6 — Baseline & MLflow** · Tag `v0.6-baseline-mlflow` · Release **Optional**
 
