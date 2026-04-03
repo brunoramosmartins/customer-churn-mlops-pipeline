@@ -52,7 +52,7 @@ python -m churn_ml.eda.run
 
 Outputs: `reports/eda_summary.md`, `reports/eda_summary.json`, `reports/figures/`.
 
-- **Notebook:** [notebooks/01_eda.ipynb](notebooks/01_eda.ipynb) · [notebooks/README.md](notebooks/README.md)
+- **Notebooks:** [notebooks/01_eda.ipynb](notebooks/01_eda.ipynb) (EDA) · [notebooks/02_pipeline_walkthrough.ipynb](notebooks/02_pipeline_walkthrough.ipynb) (sequential walkthrough: same `churn_ml` steps as the CLIs + design notes) · [notebooks/README.md](notebooks/README.md)
 
 ## Train / val / test split (Phase 4)
 
@@ -84,19 +84,40 @@ python -m churn_ml.features.run -t data/processed/train.parquet -o models -c con
 
 Phase 6 can append a classifier step to the same `Pipeline` or load `feature_pipeline.joblib` and chain a model.
 
+## Baseline model and MLflow (Phase 6)
+
+End-to-end **`Pipeline`** (preprocess from Phase 5 + **logistic regression**), **fit on train only**, metrics on **validation** (`val_roc_auc`, `val_average_precision`, `val_f1`, `val_recall_churn`). **`class_weight: balanced`** is configurable in YAML when classes are imbalanced.
+
+- **Config:** [`configs/train_baseline.yaml`](configs/train_baseline.yaml) — LR hyperparameters, MLflow experiment / run name.
+- **Artifacts:** `models/baseline.joblib` (full fitted pipeline); MLflow stores runs under **`mlruns/`** (gitignored) unless you point elsewhere.
+
+**Tracking URI:** set `MLFLOW_TRACKING_URI` for a remote store or shared folder; if unset, the default is a **local file store** `./mlruns` (relative to the process working directory).
+
+```bash
+# Requires data/processed/train.parquet and validation.parquet (Phase 4)
+# Optional: custom store — Windows CMD: set MLFLOW_TRACKING_URI=file:./mlruns
+# PowerShell: $env:MLFLOW_TRACKING_URI="file:./mlruns"  ·  Unix: export MLFLOW_TRACKING_URI=file:./mlruns
+python -m churn_ml.models.run_baseline
+python -m churn_ml.models.run_baseline --tracking-uri file:./mlruns
+# or: churn-train-baseline …
+
+mlflow ui --backend-store-uri file:./mlruns
+# Then open http://127.0.0.1:5000
+```
+
 ## Repository layout (summary)
 
 | Path | Purpose |
 |------|---------|
-| `configs/` | `metrics.yaml`, `split.yaml`, `features.yaml`, future hyperparameters |
+| `configs/` | `metrics.yaml`, `split.yaml`, `features.yaml`, `train_baseline.yaml`, … |
 | `data/raw/` | Raw CSV (gitignored; see `data/raw/README.md`) |
 | `data/processed/` | Train / validation / test artifacts |
 | `docs/` | Roadmap, **PROBLEM.md**, **EDA_LEAKAGE_CHECKLIST.md** |
 | `models/` | Serialized pipelines (gitignored) |
-| `notebooks/` | EDA (not production logic) |
+| `notebooks/` | EDA + end-to-end walkthrough (`_walkthrough_outputs/` gitignored) |
 | `reports/` | Figures, drift, evaluation summaries |
 | `scripts/` | GitHub CLI automation |
-| `src/churn_ml/` | `metrics`, `data`, `eda`, `features` (preprocessing) |
+| `src/churn_ml/` | `metrics`, `data`, `eda`, `features`, `models` (training) |
 | `tests/` | Pytest + `fixtures/telco_sample.csv` for CI |
 
 ## GitHub automation (Bash + `gh`)
@@ -121,7 +142,8 @@ chmod +x scripts/*.sh
 | 3 — EDA | **Done** — `churn_ml.eda`, `churn-eda` / `python -m churn_ml.eda.run`, `docs/EDA_LEAKAGE_CHECKLIST.md`, `notebooks/01_eda.ipynb` |
 | 4 — Split | **Done** — `churn_ml.data.split`, `churn-split` / `python -m churn_ml.data.split`, `configs/split.yaml`, Parquet + manifest under `data/processed/` |
 | 5 — Features | **Done** — `churn_ml.features`, `churn-features` / `python -m churn_ml.features.run`, `configs/features.yaml`, `feature_pipeline.joblib` + manifest under `models/` |
-| 6+ | Pending |
+| 6 — Baseline + MLflow | **Done** — `churn_ml.models`, `churn-train-baseline` / `python -m churn_ml.models.run_baseline`, `configs/train_baseline.yaml`, `models/baseline.joblib`, `mlruns/` (local or remote via `MLFLOW_TRACKING_URI`) |
+| 7+ | Pending |
 
 ## License
 

@@ -26,6 +26,7 @@ mlruns/
 
 # Jupyter
 .ipynb_checkpoints/
+notebooks/_walkthrough_outputs/
 
 # OS
 .DS_Store

@@ -1,0 +1,14 @@
+# Logistic regression baseline + MLflow defaults (Phase 6).
+
+random_state: 42
+# Use "balanced" when classes are imbalanced; set to null for sklearn default (None).
+class_weight: balanced
+
+logistic_regression:
+  C: 1.0
+  max_iter: 2000
+  solver: lbfgs
+
+mlflow:
+  experiment_name: telco-churn
+  run_name: baseline_logistic
